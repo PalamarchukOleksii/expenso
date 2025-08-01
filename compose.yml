@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres
+    container_name: expenso-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: expenso_user
+      POSTGRES_PASSWORD: strongpassword123
+      POSTGRES_DB: expenso_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - expenso-data:/var/lib/postgresql/data
+
+volumes:
+  expenso-data:
