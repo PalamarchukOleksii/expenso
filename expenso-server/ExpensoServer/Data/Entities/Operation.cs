@@ -17,6 +17,6 @@ public class Operation
 
     public User User { get; set; } = new();
     public Account Account { get; set; } = new();
-    public Account? ToAccount { get; set; } 
+    public Account? ToAccount { get; set; }
     public Category? Category { get; set; }
 }

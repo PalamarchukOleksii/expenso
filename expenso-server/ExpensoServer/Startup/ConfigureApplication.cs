@@ -18,6 +18,9 @@ public static class ConfigureApplication
 
         app.UseHttpLogging();
 
+        app.UseAuthentication();
+        app.UseAuthorization();
+
         app.MapEndpoints("api");
     }
 

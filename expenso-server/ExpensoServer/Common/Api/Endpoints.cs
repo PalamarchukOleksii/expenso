@@ -1,3 +1,5 @@
+using ExpensoServer.Common.Api.Filters;
+using ExpensoServer.Features.Accounts;
 using ExpensoServer.Features.Users;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.OpenApi.Models;
@@ -7,6 +9,7 @@ namespace ExpensoServer.Common.Api;
 public static class Endpoints
 {
     private const string Users = "users";
+    private const string Accounts = "accounts";
 
     private static readonly OpenApiSecurityScheme SecurityScheme = new()
     {
@@ -28,6 +31,7 @@ public static class Endpoints
             .WithOpenApi();
 
         endpoints.MapUserEndpoints();
+        endpoints.MapAccountEndpoints();
     }
 
     private static void MapUserEndpoints(this IEndpointRouteBuilder app)
@@ -43,6 +47,15 @@ public static class Endpoints
             .MapEndpoint<Logout.Endpoint>();
     }
 
+    private static void MapAccountEndpoints(this IEndpointRouteBuilder app)
+    {
+        var endpoints = app.MapGroup(Accounts)
+            .WithTags(Accounts);
+
+        endpoints.MapAuthorizedGroup()
+            .MapEndpoint<Create.Endpoint>();
+    }
+
     private static RouteGroupBuilder MapPublicGroup(this IEndpointRouteBuilder app, string? prefix = null)
     {
         return app.MapGroup(prefix ?? string.Empty)
@@ -53,6 +66,7 @@ public static class Endpoints
     {
         return app.MapGroup(prefix ?? string.Empty)
             .RequireAuthorization()
+            .WithMetadata(new ProducesResponseTypeMetadata(StatusCodes.Status401Unauthorized))
             .WithOpenApi(x => new OpenApiOperation(x)
             {
                 Security = [new OpenApiSecurityRequirement { [SecurityScheme] = [] }]

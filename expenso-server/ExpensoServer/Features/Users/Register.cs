@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using ExpensoServer.Common.Api;
+using ExpensoServer.Common.Api.Extensions;
 using ExpensoServer.Common.Api.Filters;
 using ExpensoServer.Data;
 using ExpensoServer.Data.Entities;
@@ -18,10 +19,9 @@ public static class Register
         public static void Map(IEndpointRouteBuilder app)
         {
             app.MapPost("/register", HandleAsync)
-                .AddEndpointFilter<RequestValidationFilter<Request>>()
+                .WithRequestValidation<Request>()
                 .Produces<Response>(StatusCodes.Status201Created)
-                .Produces<ErrorResponse>(StatusCodes.Status409Conflict)
-                .ProducesValidationProblem();
+                .Produces<ErrorResponse>(StatusCodes.Status409Conflict);
         }
     }
 
@@ -63,7 +63,7 @@ public static class Register
         var normalizedName = request.Name.Trim();
 
         var conflictMessage =
-            await CheckForExistingUserAsync(normalizedName, normalizedEmail, dbContext, cancellationToken);
+            await dbContext.CheckForExistingUserAsync(normalizedName, normalizedEmail, cancellationToken);
         if (conflictMessage is not null)
             return TypedResults.Conflict(new ErrorResponse(conflictMessage));
 
@@ -84,9 +84,9 @@ public static class Register
     }
 
     private static async Task<string?> CheckForExistingUserAsync(
+        this ApplicationDbContext dbContext,
         string name,
         string email,
-        ApplicationDbContext dbContext,
         CancellationToken cancellationToken)
     {
         var existingUser = await dbContext.Users

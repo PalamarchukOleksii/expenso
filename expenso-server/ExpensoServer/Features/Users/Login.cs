@@ -2,6 +2,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using ExpensoServer.Common.Api;
+using ExpensoServer.Common.Api.Extensions;
 using ExpensoServer.Common.Api.Filters;
 using ExpensoServer.Data;
 using ExpensoServer.Data.Entities;
@@ -21,10 +22,9 @@ public static class Login
         public static void Map(IEndpointRouteBuilder app)
         {
             app.MapPost("/login", HandleAsync)
-                .AddEndpointFilter<RequestValidationFilter<Request>>()
+                .WithRequestValidation<Request>()
                 .Produces<Response>()
-                .Produces(StatusCodes.Status401Unauthorized)
-                .ProducesValidationProblem();
+                .Produces(StatusCodes.Status401Unauthorized);
         }
     }
 
@@ -51,7 +51,7 @@ public static class Login
         ApplicationDbContext dbContext,
         CancellationToken cancellationToken)
     {
-        var user = await GetUserByEmail(request.Email, dbContext, cancellationToken);
+        var user = await dbContext.GetUserByEmailAsync(request.Email, cancellationToken);
         if (user is null || !VerifyHashedPassword(user.PasswordHash, request.Password))
             return TypedResults.Unauthorized();
 
@@ -70,7 +70,7 @@ public static class Login
         return TypedResults.Ok(new Response(user.Id, user.Name, user.Email));
     }
 
-    private static async Task<User?> GetUserByEmail(string email, ApplicationDbContext dbContext,
+    private static async Task<User?> GetUserByEmailAsync(this ApplicationDbContext dbContext, string email,
         CancellationToken cancellationToken)
     {
         return await dbContext.Users.FirstOrDefaultAsync(x => x.Email == email, cancellationToken);
