@@ -7,6 +7,7 @@ using ExpensoServer.Filters;
 using ExpensoServer.Models;
 using ExpensoServer.Shared;
 using ExpensoServer.Shared.Constants;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -17,8 +18,21 @@ namespace ExpensoServer.Features.Users;
 public static class Login
 {
     public record Request(string Email, string Password);
-    
+
     public record Response(Guid Id, string Name, string Email);
+    
+    public class Validator : AbstractValidator<Request>
+    {
+        public Validator()
+        {
+            RuleFor(x => x.Email)
+                .NotEmpty().WithMessage("Email is required.")
+                .EmailAddress().WithMessage("Invalid email format.");
+
+            RuleFor(x => x.Password)
+                .NotEmpty().WithMessage("Password is required.");
+        }
+    }
 
     public class Endpoint : IEndpoint
     {
@@ -35,7 +49,7 @@ public static class Login
         }
     }
 
-    private static async Task<Results<Ok<Response>, UnauthorizedHttpResult, ValidationProblem>> HandleAsync(
+    private static async Task<Results<Ok<Response>, UnauthorizedHttpResult>> HandleAsync(
         Request request,
         HttpContext httpContext,
         ApplicationDbContext dbContext,

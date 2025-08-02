@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography;
 using System.Text;
 using ExpensoServer.Abstractions;
@@ -16,6 +15,10 @@ public static class Register
 {
     public record Request(string Name, string Email, string Password);
 
+    public record Response(Guid Id, string Name, string Email);
+
+    public record ErrorResponse(string Message);
+
     public class Validator : AbstractValidator<Request>
     {
         public Validator()
@@ -31,12 +34,11 @@ public static class Register
 
             RuleFor(x => x.Password)
                 .NotEmpty().WithMessage("Password is required.")
-                .NotEmpty().WithMessage("Password is required")
-                .MinimumLength(8).WithMessage("Password must be at least 8 characters long")
-                .Matches("[A-Z]").WithMessage("Password must contain at least one uppercase letter")
-                .Matches("[a-z]").WithMessage("Password must contain at least one lowercase letter")
-                .Matches("[0-9]").WithMessage("Password must contain at least one digit")
-                .Matches("[^a-zA-Z0-9]").WithMessage("Password must contain at least one special character");
+                .MinimumLength(8).WithMessage("Password must be at least 8 characters long.")
+                .Matches("[A-Z]").WithMessage("Password must contain at least one uppercase letter.")
+                .Matches("[a-z]").WithMessage("Password must contain at least one lowercase letter.")
+                .Matches("[0-9]").WithMessage("Password must contain at least one digit.")
+                .Matches("[^a-zA-Z0-9]").WithMessage("Password must contain at least one special character.");
         }
     }
 
@@ -48,48 +50,58 @@ public static class Register
                 .WithOpenApi()
                 .WithTags(EndpointTags.Users)
                 .AddEndpointFilter<ValidationFilter<Request>>()
+                .Produces<Response>(StatusCodes.Status201Created)
+                .Produces<ErrorResponse>(StatusCodes.Status409Conflict)
+                .ProducesValidationProblem()
                 .AllowAnonymous();
         }
     }
 
-    private static async Task<Results<Created, Conflict<string>, ValidationProblem>> HandleAsync(Request request,
-        ApplicationDbContext dbContext, CancellationToken cancellationToken)
+    private static async Task<Results<Created<Response>, Conflict<ErrorResponse>>> HandleAsync(
+        Request request,
+        ApplicationDbContext dbContext,
+        CancellationToken cancellationToken)
     {
-        var conflictMessage = await CheckForExistingUserAsync(request, dbContext, cancellationToken);
+        var normalizedEmail = request.Email.Trim();
+        var normalizedName = request.Name.Trim();
+
+        var conflictMessage = await CheckForExistingUserAsync(normalizedName, normalizedEmail, dbContext, cancellationToken);
         if (conflictMessage is not null)
-            return TypedResults.Conflict(conflictMessage);
+            return TypedResults.Conflict(new ErrorResponse(conflictMessage));
 
         var passwordHash = HashPassword(request.Password);
 
         var user = new User
         {
-            Name = request.Name,
-            Email = request.Email,
+            Name = normalizedName,
+            Email = normalizedEmail,
             PasswordHash = passwordHash
         };
 
         dbContext.Users.Add(user);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return TypedResults.Created($"/users/{user.Id}");
+        var response = new Response(user.Id, user.Name, user.Email);
+        return TypedResults.Created($"/users/{user.Id}", response);
     }
 
     private static async Task<string?> CheckForExistingUserAsync(
-        Request request,
+        string name,
+        string email,
         ApplicationDbContext dbContext,
         CancellationToken cancellationToken)
     {
         var existingUser = await dbContext.Users
-            .Where(u => u.Name == request.Name || u.Email == request.Email)
-            .Select(u => new { Login = u.Name, u.Email })
+            .Where(u => u.Name == name || u.Email == email)
+            .Select(u => new { u.Name, u.Email })
             .FirstOrDefaultAsync(cancellationToken);
 
         if (existingUser is null)
             return null;
 
-        if (existingUser.Login == request.Name)
+        if (existingUser.Name == name)
             return "Name is already taken.";
-        if (existingUser.Email == request.Email)
+        if (existingUser.Email == email)
             return "Email is already taken.";
 
         return null;
@@ -100,8 +112,13 @@ public static class Register
         var salt = RandomNumberGenerator.GetBytes(PasswordHasherParameters.SaltSize);
         var valueBytes = Encoding.UTF8.GetBytes(password);
 
-        var hash = Rfc2898DeriveBytes.Pbkdf2(valueBytes, salt, PasswordHasherParameters.Iterations,
-            PasswordHasherParameters._hashAlgorithmName, PasswordHasherParameters.HashSize);
+        var hash = Rfc2898DeriveBytes.Pbkdf2(
+            valueBytes,
+            salt,
+            PasswordHasherParameters.Iterations,
+            PasswordHasherParameters._hashAlgorithmName,
+            PasswordHasherParameters.HashSize
+        );
 
         var result = $"{Convert.ToBase64String(salt)}${Convert.ToBase64String(hash)}";
 
