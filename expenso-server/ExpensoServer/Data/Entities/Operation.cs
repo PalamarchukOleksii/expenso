@@ -20,4 +20,3 @@ public class Operation
     public Account? ToAccount { get; set; } = null;
     public Category? Category { get; set; } = null;
 }
-

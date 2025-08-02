@@ -1,7 +1,5 @@
-using ExpensoServer.Common.Api.Extensions;
 using ExpensoServer.Data;
 using Microsoft.EntityFrameworkCore;
-using Scalar.AspNetCore;
 
 namespace ExpensoServer;
 
@@ -11,15 +9,9 @@ public static class ConfigureApplication
     {
         if (app.Environment.IsDevelopment())
         {
-            app.MapOpenApi();
-            
-            app.UseReDoc(options =>
-            {
-                options.SpecUrl("/openapi/v1.json");
-            });
-            
-            app.MapScalarApiReference();
-            
+            app.UseSwagger();
+            app.UseSwaggerUI();
+
             await app.EnsureDatabaseCreated();
         }
 

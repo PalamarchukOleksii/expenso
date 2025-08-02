@@ -16,14 +16,19 @@ public static class ConfigureServices
         builder.AddAuthentication();
         builder.AddValidators();
         builder.AddEndpoints();
-        builder.AddOpenApi();
+        builder.AddSwagger();
     }
 
-    private static void AddOpenApi(this WebApplicationBuilder builder)
+    private static void AddSwagger(this WebApplicationBuilder builder)
     {
-        builder.Services.AddOpenApi();
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen(options =>
+        {
+            options.CustomSchemaIds(type => type.FullName?.Replace('+', '.'));
+            options.InferSecuritySchemes();
+        });
     }
-    
+
     private static void AddDatabase(this WebApplicationBuilder builder)
     {
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -41,7 +46,7 @@ public static class ConfigureServices
             .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme);
     }
-    
+
     private static void AddEndpoints(this WebApplicationBuilder builder)
     {
         var endpointServiceDescriptors = Assembly.GetExecutingAssembly()

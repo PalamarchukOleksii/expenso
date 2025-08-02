@@ -13,7 +13,7 @@ services:
       - expenso-data:/var/lib/postgresql/data
     networks:
       - expenso-net
-      
+
 volumes:
   expenso-data:
 

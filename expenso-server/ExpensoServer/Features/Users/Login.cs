@@ -6,7 +6,6 @@ using ExpensoServer.Common.Api.Constants;
 using ExpensoServer.Common.Api.Filters;
 using ExpensoServer.Data;
 using ExpensoServer.Data.Entities;
-using ExpensoServer.Shared;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -15,51 +14,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ExpensoServer.Features.Users;
 
-public static class Login
+public class Login
 {
-    public record Request(string Email, string Password);
-
-    public record Response(Guid Id, string Name, string Email);
-    
-    public class Validator : AbstractValidator<Request>
-    {
-        public Validator()
-        {
-            RuleFor(x => x.Email)
-                .NotEmpty().WithMessage("Email is required.")
-                .EmailAddress().WithMessage("Invalid email format.");
-
-            RuleFor(x => x.Password)
-                .NotEmpty().WithMessage("Password is required.");
-        }
-    }
-
-    public class Endpoint : IEndpoint
-    {
-        public void MapEndpoint(IEndpointRouteBuilder app)
-        {
-            app.MapPost($"{EndpointTags.Users}/login", HandleAsync)
-                .WithOpenApi()
-                .WithTags(EndpointTags.Users)
-                .AddEndpointFilter<RequestValidationFilter<Request>>()
-                .Produces<Response>()
-                .Produces(StatusCodes.Status401Unauthorized)
-                .ProducesValidationProblem()
-                .AllowAnonymous();
-        }
-    }
-
     private static async Task<Results<Ok<Response>, UnauthorizedHttpResult>> HandleAsync(
         Request request,
         HttpContext httpContext,
         ApplicationDbContext dbContext,
         CancellationToken cancellationToken)
     {
-        var user = await GetUserByEmail(request.Email,dbContext, cancellationToken);
+        var user = await GetUserByEmail(request.Email, dbContext, cancellationToken);
         if (user is null || !VerifyHashedPassword(user.PasswordHash, request.Password))
-        {
             return TypedResults.Unauthorized();
-        }
 
         var claims = new List<Claim>
         {
@@ -75,7 +40,7 @@ public static class Login
 
         return TypedResults.Ok(new Response(user.Id, user.Name, user.Email));
     }
-    
+
     private static async Task<User?> GetUserByEmail(string email, ApplicationDbContext dbContext,
         CancellationToken cancellationToken)
     {
@@ -109,6 +74,35 @@ public static class Login
             Array.Clear(salt);
             Array.Clear(expectedHash);
             Array.Clear(valueBytes);
+        }
+    }
+
+    public record Request(string Email, string Password);
+
+    public record Response(Guid Id, string Name, string Email);
+
+    public class Validator : AbstractValidator<Request>
+    {
+        public Validator()
+        {
+            RuleFor(x => x.Email)
+                .NotEmpty().WithMessage("Email is required.")
+                .EmailAddress().WithMessage("Invalid email format.");
+
+            RuleFor(x => x.Password)
+                .NotEmpty().WithMessage("Password is required.");
+        }
+    }
+
+    public class Endpoint : IEndpoint
+    {
+        public static void Map(IEndpointRouteBuilder app)
+        {
+            app.MapPost("/login", HandleAsync)
+                .AddEndpointFilter<RequestValidationFilter<Request>>()
+                .Produces<Response>()
+                .Produces(StatusCodes.Status401Unauthorized)
+                .ProducesValidationProblem();
         }
     }
 }
