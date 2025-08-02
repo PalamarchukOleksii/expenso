@@ -8,6 +8,7 @@ using ExpensoServer.Data.Entities;
 using ExpensoServer.Features.Users.Constants;
 using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpensoServer.Features.Users;
@@ -21,15 +22,13 @@ public static class Register
             app.MapPost("/register", HandleAsync)
                 .WithRequestValidation<Request>()
                 .Produces<Response>(StatusCodes.Status201Created)
-                .Produces<ErrorResponse>(StatusCodes.Status409Conflict);
+                .ProducesProblem(StatusCodes.Status409Conflict);
         }
     }
 
     public record Request(string Name, string Email, string Password);
 
     public record Response(Guid Id, string Name, string Email);
-
-    public record ErrorResponse(string Message);
 
     public class Validator : AbstractValidator<Request>
     {
@@ -54,7 +53,7 @@ public static class Register
         }
     }
 
-    private static async Task<Results<Created<Response>, Conflict<ErrorResponse>>> HandleAsync(
+    private static async Task<Results<Created<Response>, ProblemHttpResult>> HandleAsync(
         Request request,
         ApplicationDbContext dbContext,
         CancellationToken cancellationToken)
@@ -65,7 +64,14 @@ public static class Register
         var conflictMessage =
             await dbContext.CheckForExistingUserAsync(normalizedName, normalizedEmail, cancellationToken);
         if (conflictMessage is not null)
-            return TypedResults.Conflict(new ErrorResponse(conflictMessage));
+        {
+            return TypedResults.Problem(
+                statusCode: StatusCodes.Status409Conflict,
+                title: "User Registration Conflict",
+                detail: conflictMessage,
+                type: "https://tools.ietf.org/html/rfc7231#section-6.5.8"
+            );
+        }
 
         var passwordHash = HashPassword(request.Password);
 
@@ -98,9 +104,9 @@ public static class Register
             return null;
 
         if (existingUser.Name == name)
-            return "Name is already taken.";
+            return "A user with this name already exists.";
         if (existingUser.Email == email)
-            return "Email is already taken.";
+            return "A user with this email already exists.";
 
         return null;
     }

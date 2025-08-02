@@ -6,6 +6,7 @@ using ExpensoServer.Data.Entities;
 using ExpensoServer.Data.Enums;
 using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpensoServer.Features.Accounts;
@@ -19,9 +20,8 @@ public static class Create
             app.MapPost("/create", HandleAsync)
                 .WithRequestValidation<Request>()
                 .Produces<Response>(StatusCodes.Status201Created)
-                .Produces(StatusCodes.Status401Unauthorized)
-                .Produces<ErrorResponse>(StatusCodes.Status404NotFound)
-                .Produces<ErrorResponse>(StatusCodes.Status409Conflict);
+                .ProducesProblem(StatusCodes.Status401Unauthorized)
+                .ProducesProblem(StatusCodes.Status409Conflict);
         }
     }
 
@@ -29,14 +29,14 @@ public static class Create
 
     public record Response(Guid Id, string Name, decimal Balance, Currency Currency);
 
-    public record ErrorResponse(string Message);
-
     public class Validator : AbstractValidator<Request>
     {
         public Validator()
         {
             RuleFor(x => x.Name)
-                .NotEmpty().WithMessage("Name is required.");
+                .NotEmpty().WithMessage("Name is required.")
+                .MinimumLength(3).WithMessage("Name must be at least 3 characters long.")
+                .MaximumLength(50).WithMessage("Name must be at most 100 characters long.");
 
             RuleFor(x => x.Balance)
                 .GreaterThanOrEqualTo(0).WithMessage("Balance must be zero or positive.");
@@ -46,21 +46,23 @@ public static class Create
         }
     }
 
-    private static async
-        Task<Results<Created<Response>, Conflict<ErrorResponse>, NotFound<ErrorResponse>, UnauthorizedHttpResult>>
-        HandleAsync(Request request, ApplicationDbContext dbContext, HttpContext httpContext,
-            CancellationToken cancellationToken)
+    private static async Task<Results<Created<Response>, ProblemHttpResult>> HandleAsync(
+        Request request,
+        ApplicationDbContext dbContext,
+        HttpContext httpContext,
+        CancellationToken cancellationToken)
     {
         var userIdClaim = httpContext.User.FindFirst(ClaimTypes.NameIdentifier);
-        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
-            return TypedResults.Unauthorized();
-
-        if (!await dbContext.IsUserExistByIdAsync(userId, cancellationToken))
-            return TypedResults.NotFound(new ErrorResponse("User not found."));
-
+        var userId = Guid.Parse(userIdClaim?.Value);
+            
         var existedAccount = await dbContext.GetAccountByUserIdAndNameAsync(userId, request.Name, cancellationToken);
         if (existedAccount is not null)
-            return TypedResults.Conflict(new ErrorResponse($"Account with name '{request.Name}' already exists."));
+            return TypedResults.Problem(
+                statusCode: StatusCodes.Status409Conflict,
+                title: "Account Already Exists",
+                detail: "An account with this name already exists for the current user.",
+                type: "https://tools.ietf.org/html/rfc7231#section-6.5.8"
+            );
 
         var account = new Account
         {

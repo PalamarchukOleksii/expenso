@@ -11,6 +11,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpensoServer.Features.Users;
@@ -24,7 +25,7 @@ public static class Login
             app.MapPost("/login", HandleAsync)
                 .WithRequestValidation<Request>()
                 .Produces<Response>()
-                .Produces(StatusCodes.Status401Unauthorized);
+                .ProducesProblem(StatusCodes.Status401Unauthorized);
         }
     }
 
@@ -45,7 +46,7 @@ public static class Login
         }
     }
 
-    private static async Task<Results<Ok<Response>, UnauthorizedHttpResult>> HandleAsync(
+    private static async Task<Results<Ok<Response>, ProblemHttpResult>> HandleAsync(
         Request request,
         HttpContext httpContext,
         ApplicationDbContext dbContext,
@@ -53,7 +54,12 @@ public static class Login
     {
         var user = await dbContext.GetUserByEmailAsync(request.Email, cancellationToken);
         if (user is null || !VerifyHashedPassword(user.PasswordHash, request.Password))
-            return TypedResults.Unauthorized();
+            return TypedResults.Problem(
+                statusCode: StatusCodes.Status401Unauthorized,
+                title: "Authentication Failed",
+                detail: "Invalid email or password.",
+                type: "https://tools.ietf.org/html/rfc7235#section-3.1"
+            );
 
         var claims = new List<Claim>
         {

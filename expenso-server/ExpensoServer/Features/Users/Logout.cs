@@ -17,7 +17,9 @@ public static class Logout
         }
     }
 
-    private static async Task<NoContent> HandleAsync(HttpContext context, CancellationToken cancellationToken)
+    private static async Task<Results<NoContent, ProblemHttpResult>> HandleAsync(
+        HttpContext context,
+        CancellationToken cancellationToken)
     {
         await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         return TypedResults.NoContent();

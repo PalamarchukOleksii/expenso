@@ -1,3 +1,4 @@
+using ExpensoServer.Common.Api.Extensions;
 using ExpensoServer.Common.Api.Filters;
 using ExpensoServer.Features.Accounts;
 using ExpensoServer.Features.Users;
@@ -53,7 +54,8 @@ public static class Endpoints
             .WithTags(Accounts);
 
         endpoints.MapAuthorizedGroup()
-            .MapEndpoint<Create.Endpoint>();
+            .MapEndpoint<Create.Endpoint>()
+            .MapEndpoint<Update.Endpoint>();
     }
 
     private static RouteGroupBuilder MapPublicGroup(this IEndpointRouteBuilder app, string? prefix = null)
@@ -66,7 +68,7 @@ public static class Endpoints
     {
         return app.MapGroup(prefix ?? string.Empty)
             .RequireAuthorization()
-            .WithMetadata(new ProducesResponseTypeMetadata(StatusCodes.Status401Unauthorized))
+            .WithUserId()
             .WithOpenApi(x => new OpenApiOperation(x)
             {
                 Security = [new OpenApiSecurityRequirement { [SecurityScheme] = [] }]
