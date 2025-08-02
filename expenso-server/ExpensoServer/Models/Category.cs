@@ -1,6 +1,6 @@
 using System;
 
-namespace ExpensoServer.Features.Categories;
+namespace ExpensoServer.Models;
 
 public enum CategoryType
 {

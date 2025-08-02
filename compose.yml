@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres
+    image: docker.io/library/postgres
     container_name: expenso-db
     restart: unless-stopped
     environment:
@@ -11,6 +11,11 @@ services:
       - "5432:5432"
     volumes:
       - expenso-data:/var/lib/postgresql/data
-
+    networks:
+      - expenso-net
+      
 volumes:
   expenso-data:
+
+networks:
+  expenso-net:

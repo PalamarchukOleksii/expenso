@@ -1,7 +1,4 @@
-using ExpensoServer.Features.Accounts;
-using ExpensoServer.Features.Categories;
-using ExpensoServer.Features.Operations;
-using ExpensoServer.Features.Users;
+using ExpensoServer.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpensoServer.Data;

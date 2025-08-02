@@ -1,14 +1,13 @@
-using ExpensoServer.Features.Accounts;
-using ExpensoServer.Features.Categories;
-using ExpensoServer.Features.Operations;
-using ExpensoServer.Shared;
+using ExpensoServer.Shared.Enums;
 
-namespace ExpensoServer.Features.Users;
+namespace ExpensoServer.Models;
 
 public class User
 {
     public Guid Id { get; set; } = Guid.NewGuid();
+    public string Name { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
+    public string PasswordHash { get; set; } = string.Empty;
     public Currency PreferredCurrency { get; set; } = Currency.UAH;
 
     public ICollection<Account> Accounts { get; set; } = [];

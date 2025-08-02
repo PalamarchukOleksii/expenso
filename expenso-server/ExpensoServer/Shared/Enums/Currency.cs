@@ -1,4 +1,4 @@
-namespace ExpensoServer.Shared;
+namespace ExpensoServer.Shared.Enums;
 
 public enum Currency
 {

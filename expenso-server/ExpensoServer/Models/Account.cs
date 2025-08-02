@@ -1,8 +1,9 @@
 using System;
 using ExpensoServer.Features.Users;
 using ExpensoServer.Shared;
+using ExpensoServer.Shared.Enums;
 
-namespace ExpensoServer.Features.Accounts;
+namespace ExpensoServer.Models;
 
 public class Account
 {

@@ -1,10 +1,6 @@
-using System;
-using ExpensoServer.Features.Accounts;
-using ExpensoServer.Features.Categories;
-using ExpensoServer.Features.Users;
-using ExpensoServer.Shared;
+using ExpensoServer.Shared.Enums;
 
-namespace ExpensoServer.Features.Operations;
+namespace ExpensoServer.Models;
 
 public enum OperationType
 {
