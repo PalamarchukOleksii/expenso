@@ -1,7 +1,8 @@
+using ExpensoServer.Common.Api;
 using ExpensoServer.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace ExpensoServer;
+namespace ExpensoServer.Startup;
 
 public static class ConfigureApplication
 {
@@ -14,6 +15,8 @@ public static class ConfigureApplication
 
             await app.EnsureDatabaseCreated();
         }
+
+        app.UseHttpLogging();
 
         app.MapEndpoints("api");
     }

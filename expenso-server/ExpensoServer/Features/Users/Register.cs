@@ -1,10 +1,10 @@
 using System.Security.Cryptography;
 using System.Text;
 using ExpensoServer.Common.Api;
-using ExpensoServer.Common.Api.Constants;
 using ExpensoServer.Common.Api.Filters;
 using ExpensoServer.Data;
 using ExpensoServer.Data.Entities;
+using ExpensoServer.Features.Users.Constants;
 using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +13,47 @@ namespace ExpensoServer.Features.Users;
 
 public static class Register
 {
+    public class Endpoint : IEndpoint
+    {
+        public static void Map(IEndpointRouteBuilder app)
+        {
+            app.MapPost("/register", HandleAsync)
+                .AddEndpointFilter<RequestValidationFilter<Request>>()
+                .Produces<Response>(StatusCodes.Status201Created)
+                .Produces<ErrorResponse>(StatusCodes.Status409Conflict)
+                .ProducesValidationProblem();
+        }
+    }
+
+    public record Request(string Name, string Email, string Password);
+
+    public record Response(Guid Id, string Name, string Email);
+
+    public record ErrorResponse(string Message);
+
+    public class Validator : AbstractValidator<Request>
+    {
+        public Validator()
+        {
+            RuleFor(x => x.Name)
+                .NotEmpty().WithMessage("Name is required.")
+                .MinimumLength(3).WithMessage("Name must be at least 3 characters long.")
+                .MaximumLength(50).WithMessage("Name must not exceed 50 characters.");
+
+            RuleFor(x => x.Email)
+                .NotEmpty().WithMessage("Email is required.")
+                .EmailAddress().WithMessage("Invalid email format.");
+
+            RuleFor(x => x.Password)
+                .NotEmpty().WithMessage("Password is required.")
+                .MinimumLength(8).WithMessage("Password must be at least 8 characters long.")
+                .Matches("[A-Z]").WithMessage("Password must contain at least one uppercase letter.")
+                .Matches("[a-z]").WithMessage("Password must contain at least one lowercase letter.")
+                .Matches("[0-9]").WithMessage("Password must contain at least one digit.")
+                .Matches("[^a-zA-Z0-9]").WithMessage("Password must contain at least one special character.");
+        }
+    }
+
     private static async Task<Results<Created<Response>, Conflict<ErrorResponse>>> HandleAsync(
         Request request,
         ApplicationDbContext dbContext,
@@ -73,7 +114,7 @@ public static class Register
             valueBytes,
             salt,
             PasswordHasherParameters.Iterations,
-            PasswordHasherParameters._hashAlgorithmName,
+            PasswordHasherParameters.HashAlgorithmName,
             PasswordHasherParameters.HashSize
         );
 
@@ -84,46 +125,5 @@ public static class Register
         Array.Clear(hash);
 
         return result;
-    }
-
-    public record Request(string Name, string Email, string Password);
-
-    public record Response(Guid Id, string Name, string Email);
-
-    public record ErrorResponse(string Message);
-
-    public class Validator : AbstractValidator<Request>
-    {
-        public Validator()
-        {
-            RuleFor(x => x.Name)
-                .NotEmpty().WithMessage("Name is required.")
-                .MinimumLength(3).WithMessage("Name must be at least 3 characters long.")
-                .MaximumLength(50).WithMessage("Name must not exceed 50 characters.");
-
-            RuleFor(x => x.Email)
-                .NotEmpty().WithMessage("Email is required.")
-                .EmailAddress().WithMessage("Invalid email format.");
-
-            RuleFor(x => x.Password)
-                .NotEmpty().WithMessage("Password is required.")
-                .MinimumLength(8).WithMessage("Password must be at least 8 characters long.")
-                .Matches("[A-Z]").WithMessage("Password must contain at least one uppercase letter.")
-                .Matches("[a-z]").WithMessage("Password must contain at least one lowercase letter.")
-                .Matches("[0-9]").WithMessage("Password must contain at least one digit.")
-                .Matches("[^a-zA-Z0-9]").WithMessage("Password must contain at least one special character.");
-        }
-    }
-
-    public class Endpoint : IEndpoint
-    {
-        public static void Map(IEndpointRouteBuilder app)
-        {
-            app.MapPost("/register", HandleAsync)
-                .AddEndpointFilter<RequestValidationFilter<Request>>()
-                .Produces<Response>(StatusCodes.Status201Created)
-                .Produces<ErrorResponse>(StatusCodes.Status409Conflict)
-                .ProducesValidationProblem();
-        }
     }
 }

@@ -1,15 +1,14 @@
-using ExpensoServer.Common.Api;
 using ExpensoServer.Features.Users;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.OpenApi.Models;
 
-namespace ExpensoServer;
+namespace ExpensoServer.Common.Api;
 
 public static class Endpoints
 {
     private const string Users = "users";
 
-    private static readonly OpenApiSecurityScheme securityScheme = new()
+    private static readonly OpenApiSecurityScheme SecurityScheme = new()
     {
         Type = SecuritySchemeType.ApiKey,
         Name = CookieAuthenticationDefaults.CookiePrefix + CookieAuthenticationDefaults.AuthenticationScheme,
@@ -53,7 +52,7 @@ public static class Endpoints
             .RequireAuthorization()
             .WithOpenApi(x => new OpenApiOperation(x)
             {
-                Security = [new OpenApiSecurityRequirement { [securityScheme] = [] }]
+                Security = [new OpenApiSecurityRequirement { [SecurityScheme] = [] }]
             });
     }
 

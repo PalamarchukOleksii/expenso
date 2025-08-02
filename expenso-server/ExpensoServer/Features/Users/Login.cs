@@ -2,10 +2,10 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using ExpensoServer.Common.Api;
-using ExpensoServer.Common.Api.Constants;
 using ExpensoServer.Common.Api.Filters;
 using ExpensoServer.Data;
 using ExpensoServer.Data.Entities;
+using ExpensoServer.Features.Users.Constants;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -14,8 +14,37 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ExpensoServer.Features.Users;
 
-public class Login
+public static class Login
 {
+    public class Endpoint : IEndpoint
+    {
+        public static void Map(IEndpointRouteBuilder app)
+        {
+            app.MapPost("/login", HandleAsync)
+                .AddEndpointFilter<RequestValidationFilter<Request>>()
+                .Produces<Response>()
+                .Produces(StatusCodes.Status401Unauthorized)
+                .ProducesValidationProblem();
+        }
+    }
+
+    public record Request(string Email, string Password);
+
+    public record Response(Guid Id, string Name, string Email);
+
+    public class Validator : AbstractValidator<Request>
+    {
+        public Validator()
+        {
+            RuleFor(x => x.Email)
+                .NotEmpty().WithMessage("Email is required.")
+                .EmailAddress().WithMessage("Invalid email format.");
+
+            RuleFor(x => x.Password)
+                .NotEmpty().WithMessage("Password is required.");
+        }
+    }
+
     private static async Task<Results<Ok<Response>, UnauthorizedHttpResult>> HandleAsync(
         Request request,
         HttpContext httpContext,
@@ -63,7 +92,7 @@ public class Login
                 valueBytes,
                 salt,
                 PasswordHasherParameters.Iterations,
-                PasswordHasherParameters._hashAlgorithmName,
+                PasswordHasherParameters.HashAlgorithmName,
                 expectedHash.Length
             );
 
@@ -74,35 +103,6 @@ public class Login
             Array.Clear(salt);
             Array.Clear(expectedHash);
             Array.Clear(valueBytes);
-        }
-    }
-
-    public record Request(string Email, string Password);
-
-    public record Response(Guid Id, string Name, string Email);
-
-    public class Validator : AbstractValidator<Request>
-    {
-        public Validator()
-        {
-            RuleFor(x => x.Email)
-                .NotEmpty().WithMessage("Email is required.")
-                .EmailAddress().WithMessage("Invalid email format.");
-
-            RuleFor(x => x.Password)
-                .NotEmpty().WithMessage("Password is required.");
-        }
-    }
-
-    public class Endpoint : IEndpoint
-    {
-        public static void Map(IEndpointRouteBuilder app)
-        {
-            app.MapPost("/login", HandleAsync)
-                .AddEndpointFilter<RequestValidationFilter<Request>>()
-                .Produces<Response>()
-                .Produces(StatusCodes.Status401Unauthorized)
-                .ProducesValidationProblem();
         }
     }
 }

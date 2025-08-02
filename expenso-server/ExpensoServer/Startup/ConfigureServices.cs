@@ -1,12 +1,9 @@
-using System.Reflection;
-using ExpensoServer.Common.Api;
 using ExpensoServer.Data;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace ExpensoServer;
+namespace ExpensoServer.Startup;
 
 public static class ConfigureServices
 {
@@ -15,8 +12,8 @@ public static class ConfigureServices
         builder.AddDatabase();
         builder.AddAuthentication();
         builder.AddValidators();
-        builder.AddEndpoints();
         builder.AddSwagger();
+        builder.AddRequestsLogging();
     }
 
     private static void AddSwagger(this WebApplicationBuilder builder)
@@ -47,14 +44,8 @@ public static class ConfigureServices
             .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme);
     }
 
-    private static void AddEndpoints(this WebApplicationBuilder builder)
+    private static void AddRequestsLogging(this WebApplicationBuilder builder)
     {
-        var endpointServiceDescriptors = Assembly.GetExecutingAssembly()
-            .DefinedTypes
-            .Where(type => type is { IsAbstract: false, IsInterface: false } && type.IsAssignableTo(typeof(IEndpoint)))
-            .Select(type => ServiceDescriptor.Transient(typeof(IEndpoint), type))
-            .ToArray();
-
-        builder.Services.TryAddEnumerable(endpointServiceDescriptors);
+        builder.Services.AddHttpLogging();
     }
 }
