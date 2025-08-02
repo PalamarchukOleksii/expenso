@@ -1,13 +1,6 @@
-using ExpensoServer.Shared.Enums;
+using ExpensoServer.Data.Enums;
 
-namespace ExpensoServer.Models;
-
-public enum OperationType
-{
-    Incoming,
-    Outgoing,
-    Transfer
-}
+namespace ExpensoServer.Data.Entities;
 
 public class Operation
 {

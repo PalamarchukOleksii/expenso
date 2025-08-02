@@ -1,12 +1,6 @@
-using System;
+using ExpensoServer.Data.Enums;
 
-namespace ExpensoServer.Models;
-
-public enum CategoryType
-{
-    Incoming,
-    Outgoing
-}
+namespace ExpensoServer.Data.Entities;
 
 public class Category
 {

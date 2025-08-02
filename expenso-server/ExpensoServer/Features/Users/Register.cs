@@ -1,10 +1,10 @@
 using System.Security.Cryptography;
 using System.Text;
-using ExpensoServer.Abstractions;
+using ExpensoServer.Common.Api;
+using ExpensoServer.Common.Api.Constants;
+using ExpensoServer.Common.Api.Filters;
 using ExpensoServer.Data;
-using ExpensoServer.Filters;
-using ExpensoServer.Models;
-using ExpensoServer.Shared.Constants;
+using ExpensoServer.Data.Entities;
 using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
@@ -49,7 +49,7 @@ public static class Register
             app.MapPost($"{EndpointTags.Users}/register", HandleAsync)
                 .WithOpenApi()
                 .WithTags(EndpointTags.Users)
-                .AddEndpointFilter<ValidationFilter<Request>>()
+                .AddEndpointFilter<RequestValidationFilter<Request>>()
                 .Produces<Response>(StatusCodes.Status201Created)
                 .Produces<ErrorResponse>(StatusCodes.Status409Conflict)
                 .ProducesValidationProblem()

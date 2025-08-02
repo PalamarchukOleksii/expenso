@@ -1,12 +1,12 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using ExpensoServer.Abstractions;
+using ExpensoServer.Common.Api;
+using ExpensoServer.Common.Api.Constants;
+using ExpensoServer.Common.Api.Filters;
 using ExpensoServer.Data;
-using ExpensoServer.Filters;
-using ExpensoServer.Models;
+using ExpensoServer.Data.Entities;
 using ExpensoServer.Shared;
-using ExpensoServer.Shared.Constants;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -41,7 +41,7 @@ public static class Login
             app.MapPost($"{EndpointTags.Users}/login", HandleAsync)
                 .WithOpenApi()
                 .WithTags(EndpointTags.Users)
-                .AddEndpointFilter<ValidationFilter<Request>>()
+                .AddEndpointFilter<RequestValidationFilter<Request>>()
                 .Produces<Response>()
                 .Produces(StatusCodes.Status401Unauthorized)
                 .ProducesValidationProblem()

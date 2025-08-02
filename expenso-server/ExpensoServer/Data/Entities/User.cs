@@ -1,6 +1,6 @@
-using ExpensoServer.Shared.Enums;
+using ExpensoServer.Data.Enums;
 
-namespace ExpensoServer.Models;
+namespace ExpensoServer.Data.Entities;
 
 public class User
 {

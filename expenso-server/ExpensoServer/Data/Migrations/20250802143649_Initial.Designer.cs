@@ -9,11 +9,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace ExpensoServer.Migrations
+namespace ExpensoServer.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250801145908_Init")]
-    partial class Init
+    [Migration("20250802143649_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace ExpensoServer.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("ExpensoServer.Features.Accounts.Account", b =>
+            modelBuilder.Entity("ExpensoServer.Models.Account", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -51,7 +51,7 @@ namespace ExpensoServer.Migrations
                     b.ToTable("Accounts");
                 });
 
-            modelBuilder.Entity("ExpensoServer.Features.Categories.Category", b =>
+            modelBuilder.Entity("ExpensoServer.Models.Category", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -80,7 +80,7 @@ namespace ExpensoServer.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("ExpensoServer.Features.Operations.Operation", b =>
+            modelBuilder.Entity("ExpensoServer.Models.Operation", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -126,13 +126,21 @@ namespace ExpensoServer.Migrations
                     b.ToTable("Operations");
                 });
 
-            modelBuilder.Entity("ExpensoServer.Features.Users.User", b =>
+            modelBuilder.Entity("ExpensoServer.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -144,9 +152,9 @@ namespace ExpensoServer.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("ExpensoServer.Features.Accounts.Account", b =>
+            modelBuilder.Entity("ExpensoServer.Models.Account", b =>
                 {
-                    b.HasOne("ExpensoServer.Features.Users.User", "User")
+                    b.HasOne("ExpensoServer.Models.User", "User")
                         .WithMany("Accounts")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -155,30 +163,30 @@ namespace ExpensoServer.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ExpensoServer.Features.Categories.Category", b =>
+            modelBuilder.Entity("ExpensoServer.Models.Category", b =>
                 {
-                    b.HasOne("ExpensoServer.Features.Users.User", null)
+                    b.HasOne("ExpensoServer.Models.User", null)
                         .WithMany("Categories")
                         .HasForeignKey("UserId");
                 });
 
-            modelBuilder.Entity("ExpensoServer.Features.Operations.Operation", b =>
+            modelBuilder.Entity("ExpensoServer.Models.Operation", b =>
                 {
-                    b.HasOne("ExpensoServer.Features.Accounts.Account", "Account")
+                    b.HasOne("ExpensoServer.Models.Account", "Account")
                         .WithMany()
                         .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ExpensoServer.Features.Categories.Category", "Category")
+                    b.HasOne("ExpensoServer.Models.Category", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId");
 
-                    b.HasOne("ExpensoServer.Features.Accounts.Account", "ToAccount")
+                    b.HasOne("ExpensoServer.Models.Account", "ToAccount")
                         .WithMany()
                         .HasForeignKey("ToAccountId");
 
-                    b.HasOne("ExpensoServer.Features.Users.User", "User")
+                    b.HasOne("ExpensoServer.Models.User", "User")
                         .WithMany("Operations")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -193,7 +201,7 @@ namespace ExpensoServer.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ExpensoServer.Features.Users.User", b =>
+            modelBuilder.Entity("ExpensoServer.Models.User", b =>
                 {
                     b.Navigation("Accounts");
 

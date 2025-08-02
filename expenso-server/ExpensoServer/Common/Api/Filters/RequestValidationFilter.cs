@@ -1,8 +1,8 @@
 using FluentValidation;
 
-namespace ExpensoServer.Filters;
+namespace ExpensoServer.Common.Api.Filters;
 
-public class ValidationFilter<TRequest>(IValidator<TRequest> validator) : IEndpointFilter
+public class RequestValidationFilter<TRequest>(IValidator<TRequest> validator) : IEndpointFilter
 {
     public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
     {

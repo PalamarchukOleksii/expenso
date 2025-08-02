@@ -1,4 +1,4 @@
-using ExpensoServer.Models;
+using ExpensoServer.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpensoServer.Data;

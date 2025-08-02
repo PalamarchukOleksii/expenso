@@ -1,4 +1,4 @@
-namespace ExpensoServer.Shared.Constants;
+namespace ExpensoServer.Common.Api.Constants;
 
 public static class EndpointTags
 {
