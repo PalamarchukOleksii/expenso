@@ -19,7 +19,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Data\Migrations\"/>
         <Folder Include="Features\Categories\"/>
         <Folder Include="Features\Operations\"/>
     </ItemGroup>
