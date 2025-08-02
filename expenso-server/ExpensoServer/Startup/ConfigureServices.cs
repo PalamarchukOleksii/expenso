@@ -11,6 +11,7 @@ public static class ConfigureServices
     {
         builder.AddDatabase();
         builder.AddAuthentication();
+        builder.AddAuthorization();
         builder.AddValidators();
         builder.AddSwagger();
         builder.AddRequestsLogging();
@@ -42,6 +43,11 @@ public static class ConfigureServices
         builder.Services
             .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme);
+    }
+
+    private static void AddAuthorization(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddAuthorization();
     }
 
     private static void AddRequestsLogging(this WebApplicationBuilder builder)

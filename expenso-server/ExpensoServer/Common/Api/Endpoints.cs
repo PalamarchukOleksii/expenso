@@ -38,6 +38,9 @@ public static class Endpoints
         endpoints.MapPublicGroup()
             .MapEndpoint<Register.Endpoint>()
             .MapEndpoint<Login.Endpoint>();
+
+        endpoints.MapAuthorizedGroup()
+            .MapEndpoint<Logout.Endpoint>();
     }
 
     private static RouteGroupBuilder MapPublicGroup(this IEndpointRouteBuilder app, string? prefix = null)
