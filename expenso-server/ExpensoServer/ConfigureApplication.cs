@@ -1,8 +1,7 @@
-using ExpensoServer.Common.Api;
 using ExpensoServer.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace ExpensoServer.Startup;
+namespace ExpensoServer;
 
 public static class ConfigureApplication
 {

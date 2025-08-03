@@ -3,7 +3,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
-namespace ExpensoServer.Startup;
+namespace ExpensoServer;
 
 public static class ConfigureServices
 {

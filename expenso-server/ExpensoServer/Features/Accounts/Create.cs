@@ -50,7 +50,7 @@ public static class Create
         CancellationToken cancellationToken)
     {
         var userId = claimsPrincipal.GetUserId();
-            
+
         var existedAccount = await dbContext.GetAccountByUserIdAndNameAsync(userId, request.Name, cancellationToken);
         if (existedAccount is not null)
             return TypedResults.Conflict();

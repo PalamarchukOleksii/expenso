@@ -1,4 +1,4 @@
-using ExpensoServer.Startup;
+using ExpensoServer;
 
 var builder = WebApplication.CreateBuilder(args);
 

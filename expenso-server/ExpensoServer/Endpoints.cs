@@ -1,11 +1,10 @@
-using ExpensoServer.Common.Api.Extensions;
-using ExpensoServer.Common.Api.Filters;
+using ExpensoServer.Common.Api;
 using ExpensoServer.Features.Accounts;
 using ExpensoServer.Features.Users;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.OpenApi.Models;
 
-namespace ExpensoServer.Common.Api;
+namespace ExpensoServer;
 
 public static class Endpoints
 {

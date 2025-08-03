@@ -18,20 +18,21 @@ public static class GetById
             app.MapGet("{id:guid}", HandleAsync);
         }
     }
-    
+
     public record Response(Guid Id, Guid userId, string Name, decimal Balance, Currency Currency);
 
-    private static async Task<Results<NotFound, Ok<Response>>> HandleAsync(Guid id, ApplicationDbContext dbContext,ClaimsPrincipal claimsPrincipal, CancellationToken cancellationToken)
+    private static async Task<Results<NotFound, Ok<Response>>> HandleAsync(Guid id, ApplicationDbContext dbContext,
+        ClaimsPrincipal claimsPrincipal, CancellationToken cancellationToken)
     {
         var userId = claimsPrincipal.GetUserId();
         var account = await dbContext.GetAccountByUserIdAndAccountIdAsync(userId, id, cancellationToken);
         if (account == null)
             return TypedResults.NotFound();
-        
+
         var response = new Response(account.Id, account.UserId, account.Name, account.Balance, account.Currency);
         return TypedResults.Ok(response);
     }
-    
+
     private static async Task<Account?> GetAccountByUserIdAndAccountIdAsync(
         this ApplicationDbContext context,
         Guid userId,

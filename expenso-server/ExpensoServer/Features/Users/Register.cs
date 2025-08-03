@@ -61,10 +61,7 @@ public static class Register
 
         var conflictMessage =
             await dbContext.CheckForExistingUserAsync(normalizedName, normalizedEmail, cancellationToken);
-        if (conflictMessage is not null)
-        {
-            return TypedResults.Conflict();
-        }
+        if (conflictMessage is not null) return TypedResults.Conflict();
 
         var passwordHash = HashPassword(request.Password);
 

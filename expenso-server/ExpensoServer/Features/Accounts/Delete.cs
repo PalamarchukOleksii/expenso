@@ -18,7 +18,7 @@ public static class Delete
         }
     }
 
-    private static async Task<Results<NoContent, NotFound>> HandleAsync(        
+    private static async Task<Results<NoContent, NotFound>> HandleAsync(
         Guid id,
         ApplicationDbContext dbContext,
         ClaimsPrincipal claimsPrincipal,
@@ -28,13 +28,13 @@ public static class Delete
         var account = await dbContext.GetAccountByUserIdAndAccountIdAsync(userId, id, cancellationToken);
         if (account == null)
             return TypedResults.NotFound();
-        
+
         dbContext.Accounts.Remove(account);
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return TypedResults.NoContent();
     }
-    
+
     private static async Task<Account?> GetAccountByUserIdAndAccountIdAsync(
         this ApplicationDbContext context,
         Guid userId,

@@ -52,11 +52,11 @@ public static class Update
         CancellationToken cancellationToken)
     {
         var userId = claimsPrincipal.GetUserId();
-        
+
         var account = await dbContext.GetAccountByUserIdAndAccountIdAsync(userId, id, cancellationToken);
         if (account == null)
             return TypedResults.NotFound();
-        
+
         if (request.Name is not null && request.Name != account.Name)
         {
             var existingAccount =

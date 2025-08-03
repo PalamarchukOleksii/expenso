@@ -49,7 +49,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 .HasForeignKey(t => t.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
-        
+
         modelBuilder.Entity<Account>(entity =>
         {
             entity.HasKey(a => a.Id);
@@ -74,7 +74,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 .HasForeignKey(t => t.FromAccountId)
                 .OnDelete(DeleteBehavior.Restrict);
         });
-        
+
         modelBuilder.Entity<IncomingCategory>(entity =>
         {
             entity.HasKey(c => c.Id);
@@ -84,7 +84,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 .HasForeignKey(o => o.IncomingCategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
         });
-        
+
         modelBuilder.Entity<OutgoingCategory>(entity =>
         {
             entity.HasKey(c => c.Id);
@@ -94,13 +94,13 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 .HasForeignKey(o => o.OutgoingCategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
         });
-        
+
         modelBuilder.Entity<IncomingOperation>(entity => { entity.HasKey(o => o.Id); });
-        
+
         modelBuilder.Entity<OutgoingOperation>(entity => { entity.HasKey(o => o.Id); });
-        
+
         modelBuilder.Entity<TransferOperation>(entity => { entity.HasKey(t => t.Id); });
-        
+
         modelBuilder.Entity<Account>()
             .Property(a => a.Balance)
             .HasColumnType("decimal(18,2)");
