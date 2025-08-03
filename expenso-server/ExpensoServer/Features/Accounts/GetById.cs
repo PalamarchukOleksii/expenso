@@ -15,19 +15,26 @@ public static class GetById
     {
         public static void Map(IEndpointRouteBuilder app)
         {
-            app.MapGet("{id:guid}", HandleAsync);
+            app.MapGet("{id:guid}", HandleAsync)
+                .Produces<Response>()
+                .ProducesProblem(StatusCodes.Status404NotFound);;
         }
     }
 
     public record Response(Guid Id, Guid userId, string Name, decimal Balance, Currency Currency);
 
-    private static async Task<Results<NotFound, Ok<Response>>> HandleAsync(Guid id, ApplicationDbContext dbContext,
+    private static async Task<Results<Ok<Response>, ProblemHttpResult>> HandleAsync(Guid id, ApplicationDbContext dbContext,
         ClaimsPrincipal claimsPrincipal, CancellationToken cancellationToken)
     {
         var userId = claimsPrincipal.GetUserId();
         var account = await dbContext.GetAccountByUserIdAndAccountIdAsync(userId, id, cancellationToken);
         if (account == null)
-            return TypedResults.NotFound();
+            return TypedResults.Problem(
+                statusCode: StatusCodes.Status404NotFound,
+                title :"NotFound",
+                detail: $"No account found with ID '{id}' for the current user.",
+                type: "https://tools.ietf.org/html/rfc7231#section-6.5.4"
+            );
 
         var response = new Response(account.Id, account.UserId, account.Name, account.Balance, account.Currency);
         return TypedResults.Ok(response);

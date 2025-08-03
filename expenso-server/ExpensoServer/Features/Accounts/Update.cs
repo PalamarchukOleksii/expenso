@@ -18,11 +18,15 @@ public static class Update
         public static void Map(IEndpointRouteBuilder app)
         {
             app.MapPatch("{id:guid}", HandleAsync)
-                .WithRequestValidation<Request>();
+                .WithRequestValidation<Request>()
+                .Produces<Response>()
+                .ProducesProblem(StatusCodes.Status404NotFound)
+                .ProducesProblem(StatusCodes.Status409Conflict);;
         }
     }
 
     public record Request(string? Name, decimal? Balance, Currency? Currency);
+    public record Response(Guid Id, string Name, decimal Balance, Currency Currency);
 
     public class Validator : AbstractValidator<Request>
     {
@@ -44,7 +48,7 @@ public static class Update
         }
     }
 
-    private static async Task<Results<NoContent, NotFound, Conflict>> HandleAsync(
+    private static async Task<Results<Ok<Response>, ProblemHttpResult>> HandleAsync(
         Guid id,
         Request request,
         ApplicationDbContext dbContext,
@@ -55,14 +59,24 @@ public static class Update
 
         var account = await dbContext.GetAccountByUserIdAndAccountIdAsync(userId, id, cancellationToken);
         if (account == null)
-            return TypedResults.NotFound();
+            return TypedResults.Problem(
+                statusCode: StatusCodes.Status404NotFound,
+                title :"NotFound",
+                detail: $"No account found with ID '{id}' for the current user.",
+                type: "https://tools.ietf.org/html/rfc7231#section-6.5.4"
+            );
 
         if (request.Name is not null && request.Name != account.Name)
         {
             var existingAccount =
                 await dbContext.GetAccountByUserIdAndNameAsync(userId, request.Name, cancellationToken);
             if (existingAccount is not null)
-                return TypedResults.Conflict();
+                return TypedResults.Problem(
+                    statusCode: StatusCodes.Status409Conflict,
+                    title: "Conflict",
+                    detail: $"An account with the name '{request.Name}' already exists for this user.",
+                    type: "https://tools.ietf.org/html/rfc7231#section-6.5.8"
+                );
         }
 
         if (request.Name is not null) account.Name = request.Name;
@@ -71,7 +85,8 @@ public static class Update
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return TypedResults.NoContent();
+        var response = new Response(account.Id, account.Name, account.Balance, account.Currency);
+        return TypedResults.Ok(response);
     }
 
     private static async Task<Account?> GetAccountByUserIdAndAccountIdAsync(

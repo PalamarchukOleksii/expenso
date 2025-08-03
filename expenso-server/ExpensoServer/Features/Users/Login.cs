@@ -23,7 +23,9 @@ public static class Login
         public static void Map(IEndpointRouteBuilder app)
         {
             app.MapPost("/login", HandleAsync)
-                .WithRequestValidation<Request>();
+                .WithRequestValidation<Request>()
+                .ProducesProblem(StatusCodes.Status401Unauthorized)
+                .Produces<Response>();
         }
     }
 
@@ -44,7 +46,7 @@ public static class Login
         }
     }
 
-    private static async Task<Results<Ok<Response>, UnauthorizedHttpResult>> HandleAsync(
+    private static async Task<Results<Ok<Response>, ProblemHttpResult>> HandleAsync(
         Request request,
         HttpContext httpContext,
         ApplicationDbContext dbContext,
@@ -52,7 +54,12 @@ public static class Login
     {
         var user = await dbContext.GetUserByEmailAsync(request.Email, cancellationToken);
         if (user is null || !VerifyHashedPassword(user.PasswordHash, request.Password))
-            return TypedResults.Unauthorized();
+            return TypedResults.Problem(
+                statusCode: StatusCodes.Status401Unauthorized,
+                title: "Unauthorized",
+                detail: "The email or password provided is incorrect.",
+                type: "https://tools.ietf.org/html/rfc7235#section-3.1"
+            );
 
         var claims = new List<Claim>
         {

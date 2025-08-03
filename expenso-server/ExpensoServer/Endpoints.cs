@@ -2,6 +2,7 @@ using ExpensoServer.Common.Api;
 using ExpensoServer.Features.Accounts;
 using ExpensoServer.Features.Users;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 
 namespace ExpensoServer;
@@ -69,7 +70,7 @@ public static class Endpoints
     {
         return app.MapGroup(prefix ?? string.Empty)
             .RequireAuthorization()
-            .WithMetadata(new ProducesResponseTypeMetadata(StatusCodes.Status401Unauthorized))
+            .WithMetadata(new ProducesResponseTypeAttribute(StatusCodes.Status401Unauthorized))
             .WithOpenApi(x => new OpenApiOperation(x)
             {
                 Security = [new OpenApiSecurityRequirement { [SecurityScheme] = [] }]

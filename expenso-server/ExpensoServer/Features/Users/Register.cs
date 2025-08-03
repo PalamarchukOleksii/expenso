@@ -7,6 +7,7 @@ using ExpensoServer.Data;
 using ExpensoServer.Data.Entities;
 using ExpensoServer.Features.Users.Constants;
 using FluentValidation;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +21,9 @@ public static class Register
         public static void Map(IEndpointRouteBuilder app)
         {
             app.MapPost("/register", HandleAsync)
-                .WithRequestValidation<Request>();
+                .WithRequestValidation<Request>()
+                .ProducesProblem(StatusCodes.Status409Conflict)
+                .Produces<Response>();
         }
     }
 
@@ -51,7 +54,7 @@ public static class Register
         }
     }
 
-    private static async Task<Results<Created<Response>, Conflict>> HandleAsync(
+    private static async Task<Results<Created<Response>, ProblemHttpResult>> HandleAsync(
         Request request,
         ApplicationDbContext dbContext,
         CancellationToken cancellationToken)
@@ -61,7 +64,13 @@ public static class Register
 
         var conflictMessage =
             await dbContext.CheckForExistingUserAsync(normalizedName, normalizedEmail, cancellationToken);
-        if (conflictMessage is not null) return TypedResults.Conflict();
+        if (conflictMessage is not null)
+            return TypedResults.Problem(
+                statusCode: StatusCodes.Status409Conflict,
+                title: "Conflict",
+                detail: conflictMessage,
+                type: "https://tools.ietf.org/html/rfc7231#section-6.5.8"
+            );
 
         var passwordHash = HashPassword(request.Password);
 

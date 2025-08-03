@@ -18,7 +18,9 @@ public static class Create
         public static void Map(IEndpointRouteBuilder app)
         {
             app.MapPost("/create", HandleAsync)
-                .WithRequestValidation<Request>();
+                .WithRequestValidation<Request>()
+                .ProducesProblem(StatusCodes.Status409Conflict)
+                .Produces<Response>();
         }
     }
 
@@ -43,7 +45,7 @@ public static class Create
         }
     }
 
-    private static async Task<Results<Created<Response>, Conflict>> HandleAsync(
+    private static async Task<Results<Created<Response>, ProblemHttpResult>> HandleAsync(
         Request request,
         ApplicationDbContext dbContext,
         ClaimsPrincipal claimsPrincipal,
@@ -53,8 +55,13 @@ public static class Create
 
         var existedAccount = await dbContext.GetAccountByUserIdAndNameAsync(userId, request.Name, cancellationToken);
         if (existedAccount is not null)
-            return TypedResults.Conflict();
-
+            return TypedResults.Problem(
+                statusCode: StatusCodes.Status409Conflict,
+                title: "Conflict",
+                detail: $"An account with the name '{request.Name}' already exists for this user.",
+                type: "https://tools.ietf.org/html/rfc7231#section-6.5.8"
+            );
+        
         var account = new Account
         {
             UserId = userId,

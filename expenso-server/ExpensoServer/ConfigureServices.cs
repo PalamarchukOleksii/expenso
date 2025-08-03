@@ -1,6 +1,9 @@
+using System.Diagnostics;
 using ExpensoServer.Data;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpensoServer;
@@ -15,6 +18,7 @@ public static class ConfigureServices
         builder.AddValidators();
         builder.AddOpenApi();
         builder.AddRequestsLogging();
+        builder.AddProblemDetails();
     }
 
     private static void AddOpenApi(this WebApplicationBuilder builder)
@@ -60,5 +64,22 @@ public static class ConfigureServices
     private static void AddRequestsLogging(this WebApplicationBuilder builder)
     {
         builder.Services.AddHttpLogging();
+    }
+
+    private static void AddProblemDetails(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddProblemDetails(options =>
+        {
+            options.CustomizeProblemDetails = context =>
+            {
+                context.ProblemDetails.Instance =
+                    $"{context.HttpContext.Request.Method} {context.HttpContext.Request.Path}";
+
+                context.ProblemDetails.Extensions.TryAdd("requestId", context.HttpContext.TraceIdentifier);
+
+                var activity = context.HttpContext.Features.Get<IHttpActivityFeature>()?.Activity;
+                context.ProblemDetails.Extensions.TryAdd("traceId", activity?.Id);
+            };
+        });
     }
 }

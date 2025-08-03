@@ -12,7 +12,8 @@ public static class Logout
     {
         public static void Map(IEndpointRouteBuilder app)
         {
-            app.MapPost("/logout", HandleAsync);
+            app.MapPost("/logout", HandleAsync)
+                .Produces(StatusCodes.Status204NoContent);
         }
     }
 
