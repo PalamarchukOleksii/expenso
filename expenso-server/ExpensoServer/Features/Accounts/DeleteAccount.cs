@@ -31,7 +31,7 @@ public static class DeleteAccount
         if (account == null)
             return TypedResults.Problem(
                 statusCode: StatusCodes.Status404NotFound,
-                title :"NotFound",
+                title: "NotFound",
                 detail: $"No account found with ID '{id}' for the current user.",
                 type: "https://tools.ietf.org/html/rfc7231#section-6.5.4"
             );

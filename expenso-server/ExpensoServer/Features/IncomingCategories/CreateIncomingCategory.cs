@@ -66,14 +66,14 @@ public static class CreateIncomingCategory
         var incomingCategory = new IncomingCategory
         {
             UserId = userId,
-            Name = request.Name,
+            Name = request.Name
         };
 
         dbContext.IncomingCategories.Add(incomingCategory);
         await dbContext.SaveChangesAsync(cancellationToken);
 
         var response = new Response(incomingCategory.Id, incomingCategory.Name);
-        string location = httpContext.GetCreatedIncomingCategoryLocation(incomingCategory.Id);
+        var location = httpContext.GetCreatedIncomingCategoryLocation(incomingCategory.Id);
         return TypedResults.Created(location, response);
     }
 
@@ -96,6 +96,7 @@ public static class CreateIncomingCategory
 
     private static string GetCreatedIncomingCategoryLocation(this HttpContext httpContext, Guid incomingCategoryId)
     {
-        return $"{httpContext.Request.Scheme}://{httpContext.Request.Host}/{ApiRoutes.Prefix}/{ApiRoutes.Segments.IncomingCategories}/{incomingCategoryId}";
+        return
+            $"{httpContext.Request.Scheme}://{httpContext.Request.Host}/{ApiRoutes.Prefix}/{ApiRoutes.Segments.IncomingCategories}/{incomingCategoryId}";
     }
 }

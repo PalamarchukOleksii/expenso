@@ -1,6 +1,5 @@
 using ExpensoServer.Common.Api;
 using ExpensoServer.Common.Api.Constants;
-using ExpensoServer.Data.Entities;
 using ExpensoServer.Features.Accounts;
 using ExpensoServer.Features.IncomingCategories;
 using ExpensoServer.Features.Users;
@@ -26,9 +25,9 @@ public static class Endpoints
         }
     };
 
-    public static void MapEndpoints(this WebApplication app, string? prefix = null)
+    public static void MapEndpoints(this WebApplication app)
     {
-        var endpoints = app.MapGroup(prefix ?? string.Empty)
+        var endpoints = app.MapGroup(ApiRoutes.Prefix)
             .WithOpenApi();
 
         endpoints.MapUserEndpoints();
@@ -60,7 +59,7 @@ public static class Endpoints
             .MapEndpoint<DeleteAccount.Endpoint>()
             .MapEndpoint<GetAccountById.Endpoint>();
     }
-    
+
     private static void MapIncomingCategoryEndpoints(this IEndpointRouteBuilder app)
     {
         var endpoints = app.MapGroup(ApiRoutes.Segments.IncomingCategories)

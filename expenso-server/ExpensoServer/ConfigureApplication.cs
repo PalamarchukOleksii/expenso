@@ -1,4 +1,3 @@
-using ExpensoServer.Common.Api.Constants;
 using ExpensoServer.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,11 +10,8 @@ public static class ConfigureApplication
         if (app.Environment.IsDevelopment())
         {
             app.MapOpenApi();
-            app.UseReDoc(options =>
-            {
-                options.SpecUrl = "/openapi/v1.json";
-            });
-            
+            app.UseReDoc(options => { options.SpecUrl = "/openapi/v1.json"; });
+
             await app.EnsureDatabaseCreated();
         }
 
@@ -24,7 +20,7 @@ public static class ConfigureApplication
         app.UseAuthentication();
         app.UseAuthorization();
 
-        app.MapEndpoints(ApiRoutes.Prefix);
+        app.MapEndpoints();
     }
 
     private static async Task EnsureDatabaseCreated(this WebApplication app)

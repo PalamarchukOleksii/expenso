@@ -3,7 +3,6 @@ using System.Security.Cryptography;
 using System.Text;
 using ExpensoServer.Common.Api;
 using ExpensoServer.Common.Api.Extensions;
-using ExpensoServer.Common.Api.Filters;
 using ExpensoServer.Data;
 using ExpensoServer.Data.Entities;
 using ExpensoServer.Features.Users.Constants;
@@ -11,7 +10,6 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpensoServer.Features.Users;

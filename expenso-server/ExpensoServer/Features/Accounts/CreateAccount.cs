@@ -7,7 +7,6 @@ using ExpensoServer.Data.Entities;
 using ExpensoServer.Data.Enums;
 using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpensoServer.Features.Accounts;
@@ -63,7 +62,7 @@ public static class CreateAccount
                 detail: $"An account with the name '{request.Name}' already exists for this user.",
                 type: "https://tools.ietf.org/html/rfc7231#section-6.5.8"
             );
-        
+
         var account = new Account
         {
             UserId = userId,
@@ -76,7 +75,7 @@ public static class CreateAccount
         await dbContext.SaveChangesAsync(cancellationToken);
 
         var response = new Response(account.Id, account.Name, account.Balance, account.Currency);
-        string location = httpContext.GetCreatedAccountLocation(account.Id);
+        var location = httpContext.GetCreatedAccountLocation(account.Id);
         return TypedResults.Created(location, response);
     }
 
@@ -89,9 +88,10 @@ public static class CreateAccount
         return await dbContext.Accounts
             .FirstOrDefaultAsync(x => x.UserId == userId && x.Name == accountName, cancellationToken);
     }
-    
+
     private static string GetCreatedAccountLocation(this HttpContext httpContext, Guid accountId)
     {
-        return $"{httpContext.Request.Scheme}://{httpContext.Request.Host}/{ApiRoutes.Prefix}/{ApiRoutes.Segments.Accounts}/{accountId}";
+        return
+            $"{httpContext.Request.Scheme}://{httpContext.Request.Host}/{ApiRoutes.Prefix}/{ApiRoutes.Segments.Accounts}/{accountId}";
     }
 }

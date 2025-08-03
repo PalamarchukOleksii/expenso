@@ -17,13 +17,14 @@ public static class GetAccountById
         {
             app.MapGet("{id:guid}", HandleAsync)
                 .Produces<Response>()
-                .ProducesProblem(StatusCodes.Status404NotFound);;
+                .ProducesProblem(StatusCodes.Status404NotFound);
         }
     }
 
     public record Response(Guid Id, Guid userId, string Name, decimal Balance, Currency Currency);
 
-    private static async Task<Results<Ok<Response>, ProblemHttpResult>> HandleAsync(Guid id, ApplicationDbContext dbContext,
+    private static async Task<Results<Ok<Response>, ProblemHttpResult>> HandleAsync(Guid id,
+        ApplicationDbContext dbContext,
         ClaimsPrincipal claimsPrincipal, CancellationToken cancellationToken)
     {
         var userId = claimsPrincipal.GetUserId();
@@ -31,7 +32,7 @@ public static class GetAccountById
         if (account == null)
             return TypedResults.Problem(
                 statusCode: StatusCodes.Status404NotFound,
-                title :"NotFound",
+                title: "NotFound",
                 detail: $"No account found with ID '{id}' for the current user.",
                 type: "https://tools.ietf.org/html/rfc7231#section-6.5.4"
             );

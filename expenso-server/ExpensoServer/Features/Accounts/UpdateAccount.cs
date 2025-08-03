@@ -6,7 +6,6 @@ using ExpensoServer.Data.Entities;
 using ExpensoServer.Data.Enums;
 using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpensoServer.Features.Accounts;
@@ -21,11 +20,12 @@ public static class UpdateAccount
                 .WithRequestValidation<Request>()
                 .Produces<Response>()
                 .ProducesProblem(StatusCodes.Status404NotFound)
-                .ProducesProblem(StatusCodes.Status409Conflict);;
+                .ProducesProblem(StatusCodes.Status409Conflict);
         }
     }
 
     public record Request(string? Name, decimal? Balance, Currency? Currency);
+
     public record Response(Guid Id, string Name, decimal Balance, Currency Currency);
 
     public class Validator : AbstractValidator<Request>
@@ -61,7 +61,7 @@ public static class UpdateAccount
         if (account == null)
             return TypedResults.Problem(
                 statusCode: StatusCodes.Status404NotFound,
-                title :"NotFound",
+                title: "NotFound",
                 detail: $"No account found with ID '{id}' for the current user.",
                 type: "https://tools.ietf.org/html/rfc7231#section-6.5.4"
             );
