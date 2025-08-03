@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ExpensoServer.Features.Accounts;
 
-public static class Delete
+public static class DeleteAccount
 {
     public class Endpoint : IEndpoint
     {

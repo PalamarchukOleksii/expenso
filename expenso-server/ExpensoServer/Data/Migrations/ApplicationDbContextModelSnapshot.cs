@@ -48,7 +48,7 @@ namespace ExpensoServer.Data.Migrations
                     b.ToTable("Accounts");
                 });
 
-            modelBuilder.Entity("ExpensoServer.Data.Entities.IncomingCategory", b =>
+            modelBuilder.Entity("ExpensoServer.Data.Entities.IncomingCategories", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -245,7 +245,7 @@ namespace ExpensoServer.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ExpensoServer.Data.Entities.IncomingCategory", b =>
+            modelBuilder.Entity("ExpensoServer.Data.Entities.IncomingCategories", b =>
                 {
                     b.HasOne("ExpensoServer.Data.Entities.User", "User")
                         .WithMany("IncomingCategories")
@@ -263,7 +263,7 @@ namespace ExpensoServer.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ExpensoServer.Data.Entities.IncomingCategory", "IncomingCategory")
+                    b.HasOne("ExpensoServer.Data.Entities.IncomingCategories", "IncomingCategories")
                         .WithMany("IncomingOperations")
                         .HasForeignKey("IncomingCategoryId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -277,7 +277,7 @@ namespace ExpensoServer.Data.Migrations
 
                     b.Navigation("Account");
 
-                    b.Navigation("IncomingCategory");
+                    b.Navigation("IncomingCategories");
 
                     b.Navigation("User");
                 });
@@ -357,7 +357,7 @@ namespace ExpensoServer.Data.Migrations
                     b.Navigation("OutgoingTransfers");
                 });
 
-            modelBuilder.Entity("ExpensoServer.Data.Entities.IncomingCategory", b =>
+            modelBuilder.Entity("ExpensoServer.Data.Entities.IncomingCategories", b =>
                 {
                     b.Navigation("IncomingOperations");
                 });

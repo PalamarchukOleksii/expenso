@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ExpensoServer.Features.Accounts;
 
-public static class GetById
+public static class GetAccountById
 {
     public class Endpoint : IEndpoint
     {

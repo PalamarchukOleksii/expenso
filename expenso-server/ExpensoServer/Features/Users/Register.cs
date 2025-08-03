@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using ExpensoServer.Common.Api;
+using ExpensoServer.Common.Api.Constants;
 using ExpensoServer.Common.Api.Extensions;
 using ExpensoServer.Common.Api.Filters;
 using ExpensoServer.Data;
@@ -57,6 +58,7 @@ public static class Register
     private static async Task<Results<Created<Response>, ProblemHttpResult>> HandleAsync(
         Request request,
         ApplicationDbContext dbContext,
+        HttpContext httpContext,
         CancellationToken cancellationToken)
     {
         var normalizedEmail = request.Email.Trim();
@@ -85,7 +87,8 @@ public static class Register
         await dbContext.SaveChangesAsync(cancellationToken);
 
         var response = new Response(user.Id, user.Name, user.Email);
-        return TypedResults.Created($"api/users/{user.Id}", response);
+        string location = httpContext.GetCreatedUserLocation(user.Id);
+        return TypedResults.Created(location, response);
     }
 
     private static async Task<string?> CheckForExistingUserAsync(
@@ -130,5 +133,10 @@ public static class Register
         Array.Clear(hash);
 
         return result;
+    }
+    
+    private static string GetCreatedUserLocation(this HttpContext httpContext, Guid userId)
+    {
+        return $"{httpContext.Request.Scheme}://{httpContext.Request.Host}/{ApiRoutes.Prefix}/{ApiRoutes.Segments.Users}/{userId}";
     }
 }

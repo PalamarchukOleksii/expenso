@@ -1,5 +1,8 @@
 using ExpensoServer.Common.Api;
+using ExpensoServer.Common.Api.Constants;
+using ExpensoServer.Data.Entities;
 using ExpensoServer.Features.Accounts;
+using ExpensoServer.Features.IncomingCategories;
 using ExpensoServer.Features.Users;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
@@ -9,9 +12,6 @@ namespace ExpensoServer;
 
 public static class Endpoints
 {
-    private const string Users = "users";
-    private const string Accounts = "accounts";
-
     private static readonly OpenApiSecurityScheme SecurityScheme = new()
     {
         Type = SecuritySchemeType.ApiKey,
@@ -33,12 +33,13 @@ public static class Endpoints
 
         endpoints.MapUserEndpoints();
         endpoints.MapAccountEndpoints();
+        endpoints.MapIncomingCategoryEndpoints();
     }
 
     private static void MapUserEndpoints(this IEndpointRouteBuilder app)
     {
-        var endpoints = app.MapGroup(Users)
-            .WithTags(Users);
+        var endpoints = app.MapGroup(ApiRoutes.Segments.Users)
+            .WithTags(ApiRoutes.Segments.Users);
 
         endpoints.MapPublicGroup()
             .MapEndpoint<Register.Endpoint>()
@@ -50,14 +51,23 @@ public static class Endpoints
 
     private static void MapAccountEndpoints(this IEndpointRouteBuilder app)
     {
-        var endpoints = app.MapGroup(Accounts)
-            .WithTags(Accounts);
+        var endpoints = app.MapGroup(ApiRoutes.Segments.Accounts)
+            .WithTags(ApiRoutes.Segments.Accounts);
 
         endpoints.MapAuthorizedGroup()
-            .MapEndpoint<Create.Endpoint>()
-            .MapEndpoint<Update.Endpoint>()
-            .MapEndpoint<Delete.Endpoint>()
-            .MapEndpoint<GetById.Endpoint>();
+            .MapEndpoint<CreateAccount.Endpoint>()
+            .MapEndpoint<UpdateAccount.Endpoint>()
+            .MapEndpoint<DeleteAccount.Endpoint>()
+            .MapEndpoint<GetAccountById.Endpoint>();
+    }
+    
+    private static void MapIncomingCategoryEndpoints(this IEndpointRouteBuilder app)
+    {
+        var endpoints = app.MapGroup(ApiRoutes.Segments.IncomingCategories)
+            .WithTags(ApiRoutes.Segments.IncomingCategories);
+
+        endpoints.MapAuthorizedGroup()
+            .MapEndpoint<CreateIncomingCategory.Endpoint>();
     }
 
     private static RouteGroupBuilder MapPublicGroup(this IEndpointRouteBuilder app, string? prefix = null)

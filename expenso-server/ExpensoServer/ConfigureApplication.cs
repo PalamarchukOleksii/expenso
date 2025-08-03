@@ -1,3 +1,4 @@
+using ExpensoServer.Common.Api.Constants;
 using ExpensoServer.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,7 +24,7 @@ public static class ConfigureApplication
         app.UseAuthentication();
         app.UseAuthorization();
 
-        app.MapEndpoints("api");
+        app.MapEndpoints(ApiRoutes.Prefix);
     }
 
     private static async Task EnsureDatabaseCreated(this WebApplication app)

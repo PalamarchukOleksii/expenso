@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ExpensoServer.Features.Accounts;
 
-public static class Update
+public static class UpdateAccount
 {
     public class Endpoint : IEndpoint
     {

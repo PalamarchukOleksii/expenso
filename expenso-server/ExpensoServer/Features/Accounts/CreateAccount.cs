@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using ExpensoServer.Common.Api;
+using ExpensoServer.Common.Api.Constants;
 using ExpensoServer.Common.Api.Extensions;
 using ExpensoServer.Data;
 using ExpensoServer.Data.Entities;
@@ -11,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ExpensoServer.Features.Accounts;
 
-public static class Create
+public static class CreateAccount
 {
     public class Endpoint : IEndpoint
     {
@@ -35,7 +36,7 @@ public static class Create
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("Name is required.")
                 .MinimumLength(3).WithMessage("Name must be at least 3 characters long.")
-                .MaximumLength(50).WithMessage("Name must be at most 100 characters long.");
+                .MaximumLength(50).WithMessage("Name must be at most 50 characters long.");
 
             RuleFor(x => x.Balance)
                 .GreaterThanOrEqualTo(0).WithMessage("Balance must be zero or positive.");
@@ -49,6 +50,7 @@ public static class Create
         Request request,
         ApplicationDbContext dbContext,
         ClaimsPrincipal claimsPrincipal,
+        HttpContext httpContext,
         CancellationToken cancellationToken)
     {
         var userId = claimsPrincipal.GetUserId();
@@ -74,7 +76,8 @@ public static class Create
         await dbContext.SaveChangesAsync(cancellationToken);
 
         var response = new Response(account.Id, account.Name, account.Balance, account.Currency);
-        return TypedResults.Created($"api/accounts/{account.Id}", response);
+        string location = httpContext.GetCreatedAccountLocation(account.Id);
+        return TypedResults.Created(location, response);
     }
 
     private static async Task<Account?> GetAccountByUserIdAndNameAsync(
@@ -86,10 +89,9 @@ public static class Create
         return await dbContext.Accounts
             .FirstOrDefaultAsync(x => x.UserId == userId && x.Name == accountName, cancellationToken);
     }
-
-    private static async Task<bool> IsUserExistByIdAsync(this ApplicationDbContext dbContext, Guid userId,
-        CancellationToken cancellationToken)
+    
+    private static string GetCreatedAccountLocation(this HttpContext httpContext, Guid accountId)
     {
-        return await dbContext.Users.AnyAsync(u => u.Id == userId, cancellationToken);
+        return $"{httpContext.Request.Scheme}://{httpContext.Request.Host}/{ApiRoutes.Prefix}/{ApiRoutes.Segments.Accounts}/{accountId}";
     }
 }
