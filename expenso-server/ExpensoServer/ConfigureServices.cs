@@ -13,18 +13,13 @@ public static class ConfigureServices
         builder.AddAuthentication();
         builder.AddAuthorization();
         builder.AddValidators();
-        builder.AddSwagger();
+        builder.AddOpenApi();
         builder.AddRequestsLogging();
     }
 
-    private static void AddSwagger(this WebApplicationBuilder builder)
+    private static void AddOpenApi(this WebApplicationBuilder builder)
     {
-        builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen(options =>
-        {
-            options.CustomSchemaIds(type => type.FullName?.Replace('+', '.'));
-            options.InferSecuritySchemes();
-        });
+        builder.Services.AddOpenApi();
     }
 
     private static void AddDatabase(this WebApplicationBuilder builder)
