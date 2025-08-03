@@ -20,9 +20,7 @@ public static class Register
         public static void Map(IEndpointRouteBuilder app)
         {
             app.MapPost("/register", HandleAsync)
-                .WithRequestValidation<Request>()
-                .Produces<Response>(StatusCodes.Status201Created)
-                .ProducesProblem(StatusCodes.Status409Conflict);
+                .WithRequestValidation<Request>();
         }
     }
 
@@ -53,7 +51,7 @@ public static class Register
         }
     }
 
-    private static async Task<Results<Created<Response>, ProblemHttpResult>> HandleAsync(
+    private static async Task<Results<Created<Response>, Conflict>> HandleAsync(
         Request request,
         ApplicationDbContext dbContext,
         CancellationToken cancellationToken)
@@ -65,12 +63,7 @@ public static class Register
             await dbContext.CheckForExistingUserAsync(normalizedName, normalizedEmail, cancellationToken);
         if (conflictMessage is not null)
         {
-            return TypedResults.Problem(
-                statusCode: StatusCodes.Status409Conflict,
-                title: "User Registration Conflict",
-                detail: conflictMessage,
-                type: "https://tools.ietf.org/html/rfc7231#section-6.5.8"
-            );
+            return TypedResults.Conflict();
         }
 
         var passwordHash = HashPassword(request.Password);
@@ -86,7 +79,7 @@ public static class Register
         await dbContext.SaveChangesAsync(cancellationToken);
 
         var response = new Response(user.Id, user.Name, user.Email);
-        return TypedResults.Created($"/users/{user.Id}", response);
+        return TypedResults.Created($"api/users/{user.Id}", response);
     }
 
     private static async Task<string?> CheckForExistingUserAsync(

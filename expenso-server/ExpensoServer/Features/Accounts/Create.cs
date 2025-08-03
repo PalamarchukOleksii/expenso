@@ -18,10 +18,7 @@ public static class Create
         public static void Map(IEndpointRouteBuilder app)
         {
             app.MapPost("/create", HandleAsync)
-                .WithRequestValidation<Request>()
-                .Produces<Response>(StatusCodes.Status201Created)
-                .ProducesProblem(StatusCodes.Status401Unauthorized)
-                .ProducesProblem(StatusCodes.Status409Conflict);
+                .WithRequestValidation<Request>();
         }
     }
 
@@ -46,23 +43,17 @@ public static class Create
         }
     }
 
-    private static async Task<Results<Created<Response>, ProblemHttpResult>> HandleAsync(
+    private static async Task<Results<Created<Response>, Conflict>> HandleAsync(
         Request request,
         ApplicationDbContext dbContext,
-        HttpContext httpContext,
+        ClaimsPrincipal claimsPrincipal,
         CancellationToken cancellationToken)
     {
-        var userIdClaim = httpContext.User.FindFirst(ClaimTypes.NameIdentifier);
-        var userId = Guid.Parse(userIdClaim?.Value);
+        var userId = claimsPrincipal.GetUserId();
             
         var existedAccount = await dbContext.GetAccountByUserIdAndNameAsync(userId, request.Name, cancellationToken);
         if (existedAccount is not null)
-            return TypedResults.Problem(
-                statusCode: StatusCodes.Status409Conflict,
-                title: "Account Already Exists",
-                detail: "An account with this name already exists for the current user.",
-                type: "https://tools.ietf.org/html/rfc7231#section-6.5.8"
-            );
+            return TypedResults.Conflict();
 
         var account = new Account
         {
@@ -76,7 +67,7 @@ public static class Create
         await dbContext.SaveChangesAsync(cancellationToken);
 
         var response = new Response(account.Id, account.Name, account.Balance, account.Currency);
-        return TypedResults.Created($"/accounts/{account.Id}", response);
+        return TypedResults.Created($"api/accounts/{account.Id}", response);
     }
 
     private static async Task<Account?> GetAccountByUserIdAndNameAsync(

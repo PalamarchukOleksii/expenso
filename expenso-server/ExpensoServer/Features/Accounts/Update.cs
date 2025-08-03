@@ -18,10 +18,7 @@ public static class Update
         public static void Map(IEndpointRouteBuilder app)
         {
             app.MapPatch("{id:guid}", HandleAsync)
-                .WithRequestValidation<Request>()
-                .Produces(StatusCodes.Status204NoContent)
-                .ProducesProblem(StatusCodes.Status404NotFound)
-                .ProducesProblem(StatusCodes.Status409Conflict);
+                .WithRequestValidation<Request>();
         }
     }
 
@@ -47,36 +44,25 @@ public static class Update
         }
     }
 
-    private static async Task<Results<NoContent, ProblemHttpResult>> HandleAsync(
+    private static async Task<Results<NoContent, NotFound, Conflict>> HandleAsync(
         Guid id,
         Request request,
         ApplicationDbContext dbContext,
-        HttpContext httpContext,
+        ClaimsPrincipal claimsPrincipal,
         CancellationToken cancellationToken)
     {
-        var userIdClaim = httpContext.User.FindFirst(ClaimTypes.NameIdentifier);
-        var userId = Guid.Parse(userIdClaim?.Value);
+        var userId = claimsPrincipal.GetUserId();
         
         var account = await dbContext.GetAccountByUserIdAndAccountIdAsync(userId, id, cancellationToken);
         if (account == null)
-            return TypedResults.Problem(
-                statusCode: StatusCodes.Status404NotFound,
-                title: "Account Not Found",
-                detail: "The specified account was not found or does not belong to the current user.",
-                type: "https://tools.ietf.org/html/rfc7231#section-6.5.4"
-            );
+            return TypedResults.NotFound();
         
         if (request.Name is not null && request.Name != account.Name)
         {
             var existingAccount =
                 await dbContext.GetAccountByUserIdAndNameAsync(userId, request.Name, cancellationToken);
             if (existingAccount is not null)
-                return TypedResults.Problem(
-                    statusCode: StatusCodes.Status409Conflict,
-                    title: "Account Name Already Exists",
-                    detail: "An account with this name already exists for the current user.",
-                    type: "https://tools.ietf.org/html/rfc7231#section-6.5.8"
-                );
+                return TypedResults.Conflict();
         }
 
         if (request.Name is not null) account.Name = request.Name;

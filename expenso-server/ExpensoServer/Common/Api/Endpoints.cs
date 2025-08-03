@@ -55,7 +55,9 @@ public static class Endpoints
 
         endpoints.MapAuthorizedGroup()
             .MapEndpoint<Create.Endpoint>()
-            .MapEndpoint<Update.Endpoint>();
+            .MapEndpoint<Update.Endpoint>()
+            .MapEndpoint<Delete.Endpoint>()
+            .MapEndpoint<GetById.Endpoint>();
     }
 
     private static RouteGroupBuilder MapPublicGroup(this IEndpointRouteBuilder app, string? prefix = null)
@@ -68,7 +70,7 @@ public static class Endpoints
     {
         return app.MapGroup(prefix ?? string.Empty)
             .RequireAuthorization()
-            .WithUserId()
+            .WithMetadata(new ProducesResponseTypeMetadata(StatusCodes.Status401Unauthorized))
             .WithOpenApi(x => new OpenApiOperation(x)
             {
                 Security = [new OpenApiSecurityRequirement { [SecurityScheme] = [] }]
