@@ -130,14 +130,17 @@ namespace ExpensoServer.Data.Migrations
                     b.Property<Guid?>("CategoryId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<int>("Currency")
+                        .HasColumnType("integer");
 
                     b.Property<Guid?>("FromAccountId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Notes")
+                    b.Property<string>("Note")
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid?>("ToAccountId")
                         .HasColumnType("uuid");

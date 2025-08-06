@@ -9,9 +9,10 @@ public class Operation
     public Guid? ToAccountId { get; set; }
     public Guid? CategoryId { get; set; }
     public decimal Amount { get; set; }
+    public Currency Currency { get; set; }
     public OperationType Type { get; set; }
-    public DateTime Date { get; set; } = DateTime.UtcNow;
-    public string? Notes { get; set; }
+    public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+    public string? Note { get; set; }
 
     public Account? FromAccount { get; set; }
     public Account? ToAccount { get; set; }

@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace ExpensoServer.Data.Migrations
 {
     /// <inheritdoc />
@@ -76,8 +78,8 @@ namespace ExpensoServer.Data.Migrations
                     CategoryId = table.Column<Guid>(type: "uuid", nullable: true),
                     Amount = table.Column<decimal>(type: "numeric", nullable: false),
                     Type = table.Column<int>(type: "integer", nullable: false),
-                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Notes = table.Column<string>(type: "text", nullable: true),
+                    Timestamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Note = table.Column<string>(type: "text", nullable: true),
                     UserId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
@@ -103,6 +105,19 @@ namespace ExpensoServer.Data.Migrations
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.InsertData(
+                table: "Categories",
+                columns: new[] { "Id", "IsDefault", "Name", "Type", "UserId" },
+                values: new object[,]
+                {
+                    { new Guid("181f61df-3da5-4f89-ab05-8b0718d25aa2"), true, "Salary", 0, null },
+                    { new Guid("430b7c2c-bdd5-4bee-8609-e08c8f406a39"), true, "Food", 1, null },
+                    { new Guid("bc539863-1619-4d83-a168-2b828f694c3e"), true, "Home", 1, null },
+                    { new Guid("ceca4e62-81f6-4aa7-b37c-9f57b0ef4a71"), true, "Investments", 0, null },
+                    { new Guid("ddabd24b-40c3-4a3b-aa9b-3de111054a63"), true, "Other", 0, null },
+                    { new Guid("eb34eabf-891c-4eee-98d2-c64c4315055d"), true, "Other", 1, null }
                 });
 
             migrationBuilder.CreateIndex(

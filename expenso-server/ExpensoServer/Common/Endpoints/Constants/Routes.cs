@@ -11,5 +11,7 @@ public static class Routes
         public const string Accounts = "accounts";
         public const string IncomeCategories = "income-categories";
         public const string ExpenseCategories = "expense-categories";
+        public const string IncomeOperations = "income-operations";
+        public const string ExpenseOperations = "expense-operations";
     }
 }

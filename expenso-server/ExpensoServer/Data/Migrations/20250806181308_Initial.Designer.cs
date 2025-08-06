@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ExpensoServer.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250806130848_AddDefaultCategories")]
-    partial class AddDefaultCategories
+    [Migration("20250806181308_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -133,14 +133,14 @@ namespace ExpensoServer.Data.Migrations
                     b.Property<Guid?>("CategoryId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<Guid?>("FromAccountId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Notes")
+                    b.Property<string>("Note")
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid?>("ToAccountId")
                         .HasColumnType("uuid");
