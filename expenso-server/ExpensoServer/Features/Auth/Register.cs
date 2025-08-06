@@ -1,11 +1,11 @@
 using System.Security.Cryptography;
 using System.Text;
-using ExpensoServer.Common.Api;
-using ExpensoServer.Common.Api.Constants;
-using ExpensoServer.Common.Api.Filters;
+using ExpensoServer.Common.Auth.Constants;
+using ExpensoServer.Common.Endpoints;
+using ExpensoServer.Common.Endpoints.Constants;
+using ExpensoServer.Common.Endpoints.Filters;
 using ExpensoServer.Data;
 using ExpensoServer.Data.Entities;
-using ExpensoServer.Features.Auth.Constants;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
@@ -65,9 +65,10 @@ public static class Register
         dbContext.Users.Add(user);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return TypedResults.Created(
-            $"{httpContext.Request.Scheme}://{httpContext.Request.Host}/{ApiRoutes.Prefix}/{ApiRoutes.Segments.Users}/{user.Id}",
-            new Response(user.Id, user.Email));
+        var location =
+            $"{httpContext.Request.Scheme}://{httpContext.Request.Host}/{Routes.Prefix}/{Routes.Segments.Users}/{user.Id}";
+
+        return TypedResults.Created(location, new Response(user.Id, user.Email));
     }
 
     private static PasswordHashResult HashPassword(string password)

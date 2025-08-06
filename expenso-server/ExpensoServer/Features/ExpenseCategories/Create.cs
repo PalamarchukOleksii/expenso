@@ -7,10 +7,9 @@ using ExpensoServer.Data;
 using ExpensoServer.Data.Entities;
 using ExpensoServer.Data.Enums;
 using FluentValidation;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
-namespace ExpensoServer.Features.Accounts;
+namespace ExpensoServer.Features.ExpenseCategories;
 
 public static class Create
 {
@@ -23,9 +22,9 @@ public static class Create
         }
     }
 
-    public record Request(string Name, decimal Balance, string Currency);
+    public record Request(string Name);
 
-    public record Response(Guid Id, string Name, decimal Balance, string Currency);
+    public record Response(Guid Id, string Name);
 
     public class Validator : AbstractValidator<Request>
     {
@@ -35,14 +34,6 @@ public static class Create
                 .NotEmpty().WithMessage("Name is required.")
                 .MinimumLength(3).WithMessage("Name must be at least 3 characters long.")
                 .MaximumLength(50).WithMessage("Name must be at most 50 characters long.");
-
-            RuleFor(x => x.Balance)
-                .GreaterThanOrEqualTo(0).WithMessage("Balance must be zero or positive.");
-
-            RuleFor(x => x.Currency)
-                .NotEmpty().WithMessage("Currency is required.")
-                .Must(value => Enum.TryParse<Currency>(value, false, out _))
-                .WithMessage("Invalid currency.");
         }
     }
 
@@ -53,32 +44,29 @@ public static class Create
         HttpContext httpContext,
         CancellationToken cancellationToken)
     {
-        if (!Enum.TryParse<Currency>(request.Currency, false, out var currencyEnum))
-            return TypedResults.BadRequest();
-
         var userId = claimsPrincipal.GetUserId();
 
-        var nameExist = await dbContext.Accounts
-            .AnyAsync(x => x.UserId == userId && x.Name == request.Name, cancellationToken);
+        var nameExists = await dbContext.Categories.AnyAsync(c =>
+            c.Name == request.Name &&
+            c.Type == CategoryType.Expense &&
+            (c.UserId == userId || c.IsDefault), cancellationToken);
 
-        if (nameExist)
+        if (nameExists)
             return TypedResults.Conflict();
 
-        var account = new Account
+        var category = new Category
         {
             UserId = userId,
             Name = request.Name,
-            Balance = request.Balance,
-            Currency = currencyEnum
+            Type = CategoryType.Expense
         };
 
-        dbContext.Accounts.Add(account);
+        dbContext.Categories.Add(category);
         await dbContext.SaveChangesAsync(cancellationToken);
 
         var location =
-            $"{httpContext.Request.Scheme}://{httpContext.Request.Host}/{Routes.Prefix}/{Routes.Segments.Accounts}/{account.Id}";
+            $"{httpContext.Request.Scheme}://{httpContext.Request.Host}/{Routes.Prefix}/{Routes.Segments.ExpenseCategories}/{category.Id}";
 
-        return TypedResults.Created(location,
-            new Response(account.Id, account.Name, account.Balance, account.Currency.ToString()));
+        return TypedResults.Created(location, new Response(category.Id, category.Name));
     }
 }

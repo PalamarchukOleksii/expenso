@@ -1,8 +1,8 @@
 using System.Security.Claims;
-using ExpensoServer.Common.Api;
-using ExpensoServer.Common.Api.Constants;
-using ExpensoServer.Common.Api.Extensions;
-using ExpensoServer.Common.Api.Filters;
+using ExpensoServer.Common.Endpoints;
+using ExpensoServer.Common.Endpoints.Constants;
+using ExpensoServer.Common.Endpoints.Extensions;
+using ExpensoServer.Common.Endpoints.Filters;
 using ExpensoServer.Data;
 using ExpensoServer.Data.Entities;
 using ExpensoServer.Data.Enums;
@@ -37,15 +37,21 @@ public static class Create
         }
     }
 
-    private static async Task<IResult> HandleAsync(Request request, ApplicationDbContext dbContext,
-        ClaimsPrincipal claimsPrincipal, HttpContext httpContext, CancellationToken cancellationToken)
+    private static async Task<IResult> HandleAsync(
+        Request request,
+        ApplicationDbContext dbContext,
+        ClaimsPrincipal claimsPrincipal,
+        HttpContext httpContext,
+        CancellationToken cancellationToken)
     {
         var userId = claimsPrincipal.GetUserId();
 
-        if (await dbContext.Categories.AnyAsync(
-                x => x.Name == request.Name && x.IsDefault && x.Type == CategoryType.Income, cancellationToken) ||
-            await dbContext.Categories.AnyAsync(
-                x => x.UserId == userId && x.Name == request.Name && x.Type == CategoryType.Income, cancellationToken))
+        var nameExists = await dbContext.Categories.AnyAsync(c =>
+            c.Name == request.Name &&
+            c.Type == CategoryType.Income &&
+            (c.UserId == userId || c.IsDefault), cancellationToken);
+
+        if (nameExists)
             return TypedResults.Conflict();
 
         var category = new Category
@@ -58,8 +64,9 @@ public static class Create
         dbContext.Categories.Add(category);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return TypedResults.Created(
-            $"{httpContext.Request.Scheme}://{httpContext.Request.Host}/{ApiRoutes.Prefix}/{ApiRoutes.Segments.IncomeCategories}/{category.Id}",
-            new Response(category.Id, category.Name));
+        var location =
+            $"{httpContext.Request.Scheme}://{httpContext.Request.Host}/{Routes.Prefix}/{Routes.Segments.IncomeCategories}/{category.Id}";
+
+        return TypedResults.Created(location, new Response(category.Id, category.Name));
     }
 }

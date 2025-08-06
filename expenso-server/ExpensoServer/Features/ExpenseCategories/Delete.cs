@@ -2,11 +2,10 @@ using System.Security.Claims;
 using ExpensoServer.Common.Endpoints;
 using ExpensoServer.Common.Endpoints.Extensions;
 using ExpensoServer.Data;
-using ExpensoServer.Data.Entities;
-using Microsoft.AspNetCore.Http.HttpResults;
+using ExpensoServer.Data.Enums;
 using Microsoft.EntityFrameworkCore;
 
-namespace ExpensoServer.Features.Accounts;
+namespace ExpensoServer.Features.ExpenseCategories;
 
 public static class Delete
 {
@@ -25,13 +24,18 @@ public static class Delete
         CancellationToken cancellationToken)
     {
         var userId = claimsPrincipal.GetUserId();
-        var account = await dbContext.Accounts
-            .FirstOrDefaultAsync(a => a.Id == id && a.UserId == userId, cancellationToken);
 
-        if (account == null)
+        var category = await dbContext.Categories
+            .Where(x => x.Type == CategoryType.Expense)
+            .FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId, cancellationToken);
+
+        if (category == null)
             return TypedResults.NotFound();
 
-        dbContext.Accounts.Remove(account);
+        if (category.IsDefault)
+            return TypedResults.Forbid();
+
+        dbContext.Categories.Remove(category);
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return TypedResults.NoContent();

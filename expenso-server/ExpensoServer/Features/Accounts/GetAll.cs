@@ -1,6 +1,6 @@
 using System.Security.Claims;
-using ExpensoServer.Common.Api;
-using ExpensoServer.Common.Api.Extensions;
+using ExpensoServer.Common.Endpoints;
+using ExpensoServer.Common.Endpoints.Extensions;
 using ExpensoServer.Data;
 using ExpensoServer.Data.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -26,12 +26,7 @@ public static class GetAll
 
         var accounts = await dbContext.Accounts
             .Where(a => a.UserId == userId)
-            .Select(a => new Response(
-                a.Id,
-                a.Name,
-                a.Balance,
-                a.Currency.ToString()
-            ))
+            .Select(a => new Response(a.Id, a.Name, a.Balance, a.Currency.ToString()))
             .ToListAsync(cancellationToken);
 
         return TypedResults.Ok(accounts);

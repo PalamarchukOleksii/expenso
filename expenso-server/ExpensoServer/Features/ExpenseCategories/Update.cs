@@ -7,7 +7,7 @@ using ExpensoServer.Data.Enums;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
-namespace ExpensoServer.Features.IncomeCategories;
+namespace ExpensoServer.Features.ExpenseCategories;
 
 public static class Update
 {
@@ -45,7 +45,7 @@ public static class Update
         var userId = claimsPrincipal.GetUserId();
 
         var category = await dbContext.Categories
-            .Where(x => x.Type == CategoryType.Income)
+            .Where(x => x.Type == CategoryType.Expense)
             .FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId, cancellationToken);
 
         if (category == null)
@@ -58,7 +58,7 @@ public static class Update
             return TypedResults.Ok(new Response(category.Id, category.Name));
 
         var isNameConflict = await dbContext.Categories.AnyAsync(x =>
-            x.Type == CategoryType.Income &&
+            x.Type == CategoryType.Expense &&
             x.Name == request.Name &&
             x.Id != id &&
             (x.UserId == userId || x.IsDefault), cancellationToken);

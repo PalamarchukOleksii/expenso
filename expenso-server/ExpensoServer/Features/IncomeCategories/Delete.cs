@@ -1,9 +1,8 @@
 using System.Security.Claims;
-using ExpensoServer.Common.Api;
-using ExpensoServer.Common.Api.Extensions;
+using ExpensoServer.Common.Endpoints;
+using ExpensoServer.Common.Endpoints.Extensions;
 using ExpensoServer.Data;
 using ExpensoServer.Data.Enums;
-using Microsoft.AspNetCore.Server.IISIntegration;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpensoServer.Features.IncomeCategories;
@@ -24,17 +23,17 @@ public static class Delete
         ClaimsPrincipal claimsPrincipal,
         CancellationToken cancellationToken)
     {
-        if (await dbContext.Categories.AnyAsync(a => a.Id == id && a.IsDefault && a.Type == CategoryType.Income,
-                cancellationToken))
-            return TypedResults.Forbid();
-
         var userId = claimsPrincipal.GetUserId();
 
-        var category =
-            await dbContext.Categories.FirstOrDefaultAsync(
-                a => a.Id == id && a.UserId == userId && a.Type == CategoryType.Income, cancellationToken);
+        var category = await dbContext.Categories
+            .Where(x => x.Type == CategoryType.Income)
+            .FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId, cancellationToken);
+
         if (category == null)
             return TypedResults.NotFound();
+
+        if (category.IsDefault)
+            return TypedResults.Forbid();
 
         dbContext.Categories.Remove(category);
         await dbContext.SaveChangesAsync(cancellationToken);

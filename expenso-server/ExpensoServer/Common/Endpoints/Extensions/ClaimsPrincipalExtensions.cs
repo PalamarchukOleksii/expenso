@@ -1,6 +1,6 @@
 using System.Security.Claims;
 
-namespace ExpensoServer.Common.Api.Extensions;
+namespace ExpensoServer.Common.Endpoints.Extensions;
 
 public static class ClaimsPrincipalExtensions
 {

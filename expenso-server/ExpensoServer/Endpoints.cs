@@ -1,5 +1,5 @@
-using ExpensoServer.Common.Api;
-using ExpensoServer.Common.Api.Constants;
+using ExpensoServer.Common.Endpoints;
+using ExpensoServer.Common.Endpoints.Constants;
 using ExpensoServer.Features;
 using ExpensoServer.Features.Auth;
 
@@ -9,17 +9,18 @@ public static class Endpoints
 {
     public static void MapEndpoints(this WebApplication app)
     {
-        var endpoints = app.MapGroup(ApiRoutes.Prefix);
+        var endpoints = app.MapGroup(Routes.Prefix);
 
         endpoints.MapUserEndpoints();
         endpoints.MapAccountEndpoints();
         endpoints.MapIncomeCategoryEndpoints();
+        endpoints.MapExpenseCategoryEndpoints();
     }
 
     private static void MapUserEndpoints(this IEndpointRouteBuilder app)
     {
-        var endpoints = app.MapGroup(ApiRoutes.Segments.Auth)
-            .WithTags(ApiRoutes.Segments.Auth);
+        var endpoints = app.MapGroup(Routes.Segments.Auth)
+            .WithTags(Routes.Segments.Auth);
 
         endpoints.MapPublicGroup()
             .MapEndpoint<Features.Auth.Register.Endpoint>()
@@ -31,8 +32,8 @@ public static class Endpoints
 
     private static void MapAccountEndpoints(this IEndpointRouteBuilder app)
     {
-        var endpoints = app.MapGroup(ApiRoutes.Segments.Accounts)
-            .WithTags(ApiRoutes.Segments.Accounts);
+        var endpoints = app.MapGroup(Routes.Segments.Accounts)
+            .WithTags(Routes.Segments.Accounts);
 
         endpoints.MapAuthorizedGroup()
             .MapEndpoint<Features.Accounts.Create.Endpoint>()
@@ -44,8 +45,8 @@ public static class Endpoints
 
     private static void MapIncomeCategoryEndpoints(this IEndpointRouteBuilder app)
     {
-        var endpoints = app.MapGroup(ApiRoutes.Segments.IncomeCategories)
-            .WithTags(ApiRoutes.Segments.IncomeCategories);
+        var endpoints = app.MapGroup(Routes.Segments.IncomeCategories)
+            .WithTags(Routes.Segments.IncomeCategories);
 
         endpoints.MapAuthorizedGroup()
             .MapEndpoint<Features.IncomeCategories.Create.Endpoint>()
@@ -53,6 +54,19 @@ public static class Endpoints
             .MapEndpoint<Features.IncomeCategories.Delete.Endpoint>()
             .MapEndpoint<Features.IncomeCategories.GetById.Endpoint>()
             .MapEndpoint<Features.IncomeCategories.GetAll.Endpoint>();
+    }
+
+    private static void MapExpenseCategoryEndpoints(this IEndpointRouteBuilder app)
+    {
+        var endpoints = app.MapGroup(Routes.Segments.ExpenseCategories)
+            .WithTags(Routes.Segments.ExpenseCategories);
+
+        endpoints.MapAuthorizedGroup()
+            .MapEndpoint<Features.ExpenseCategories.Create.Endpoint>()
+            .MapEndpoint<Features.ExpenseCategories.Update.Endpoint>()
+            .MapEndpoint<Features.ExpenseCategories.Delete.Endpoint>()
+            .MapEndpoint<Features.ExpenseCategories.GetById.Endpoint>()
+            .MapEndpoint<Features.ExpenseCategories.GetAll.Endpoint>();
     }
 
     private static RouteGroupBuilder MapPublicGroup(this IEndpointRouteBuilder app, string? prefix = null)

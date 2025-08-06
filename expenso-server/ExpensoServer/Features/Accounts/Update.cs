@@ -1,7 +1,7 @@
 using System.Security.Claims;
-using ExpensoServer.Common.Api;
-using ExpensoServer.Common.Api.Extensions;
-using ExpensoServer.Common.Api.Filters;
+using ExpensoServer.Common.Endpoints;
+using ExpensoServer.Common.Endpoints.Extensions;
+using ExpensoServer.Common.Endpoints.Filters;
 using ExpensoServer.Data;
 using ExpensoServer.Data.Entities;
 using ExpensoServer.Data.Enums;
@@ -54,28 +54,59 @@ public static class Update
         ClaimsPrincipal claimsPrincipal,
         CancellationToken cancellationToken)
     {
-        if (!Enum.TryParse<Currency>(request.Currency, false, out var currencyEnum))
-            return TypedResults.BadRequest();
+        Currency? currencyEnum = null;
+
+        if (request.Currency is not null)
+        {
+            if (!Enum.TryParse<Currency>(request.Currency, false, out var parsedCurrency))
+                return TypedResults.BadRequest();
+
+            currencyEnum = parsedCurrency;
+        }
 
         var userId = claimsPrincipal.GetUserId();
 
-        var account =
-            await dbContext.Accounts.FirstOrDefaultAsync(a => a.Id == id && a.UserId == userId, cancellationToken);
-        if (account == null)
+        var account = await dbContext.Accounts
+            .Where(x => x.UserId == userId)
+            .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
+
+        if (account is null)
             return TypedResults.NotFound();
 
         if (request.Name is not null && request.Name != account.Name)
         {
-            var existingAccount =
-                await dbContext.Accounts.FirstOrDefaultAsync(x => x.UserId == userId && x.Name == request.Name,
-                    cancellationToken);
-            if (existingAccount is not null)
+            var isNameConflict = await dbContext.Accounts.AnyAsync(x =>
+                x.UserId == userId &&
+                x.Name == request.Name &&
+                x.Id != id, cancellationToken);
+
+            if (isNameConflict)
                 return TypedResults.Conflict();
         }
 
-        if (request.Name is not null) account.Name = request.Name;
-        if (request.Balance is not null) account.Balance = request.Balance.Value;
-        if (request.Currency is not null) account.Currency = currencyEnum;
+        var hasChanges = false;
+
+        if (request.Name is not null && request.Name != account.Name)
+        {
+            account.Name = request.Name;
+            hasChanges = true;
+        }
+
+        if (request.Balance is not null && request.Balance.Value != account.Balance)
+        {
+            account.Balance = request.Balance.Value;
+            hasChanges = true;
+        }
+
+        if (currencyEnum is not null && currencyEnum.Value != account.Currency)
+        {
+            account.Currency = currencyEnum.Value;
+            hasChanges = true;
+        }
+
+        if (!hasChanges)
+            return TypedResults.Ok(
+                new Response(account.Id, account.Name, account.Balance, account.Currency.ToString()));
 
         await dbContext.SaveChangesAsync(cancellationToken);
 

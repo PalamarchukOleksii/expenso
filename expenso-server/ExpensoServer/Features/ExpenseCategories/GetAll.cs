@@ -5,7 +5,7 @@ using ExpensoServer.Data;
 using ExpensoServer.Data.Enums;
 using Microsoft.EntityFrameworkCore;
 
-namespace ExpensoServer.Features.IncomeCategories;
+namespace ExpensoServer.Features.ExpenseCategories;
 
 public static class GetAll
 {
@@ -27,7 +27,7 @@ public static class GetAll
         var userId = claimsPrincipal.GetUserId();
 
         var categories = await dbContext.Categories
-            .Where(c => (c.UserId == userId || c.IsDefault) && c.Type == CategoryType.Income)
+            .Where(c => (c.UserId == userId || c.IsDefault) && c.Type == CategoryType.Expense)
             .Select(c => new Response(c.Id, c.Name))
             .ToListAsync(cancellationToken);
 

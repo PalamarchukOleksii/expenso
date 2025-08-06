@@ -1,6 +1,6 @@
-namespace ExpensoServer.Common.Api.Constants;
+namespace ExpensoServer.Common.Endpoints.Constants;
 
-public static class ApiRoutes
+public static class Routes
 {
     public const string Prefix = "api";
 
@@ -10,5 +10,6 @@ public static class ApiRoutes
         public const string Users = "users";
         public const string Accounts = "accounts";
         public const string IncomeCategories = "income-categories";
+        public const string ExpenseCategories = "expense-categories";
     }
 }

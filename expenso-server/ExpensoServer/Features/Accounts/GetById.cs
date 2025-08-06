@@ -1,6 +1,6 @@
 using System.Security.Claims;
-using ExpensoServer.Common.Api;
-using ExpensoServer.Common.Api.Extensions;
+using ExpensoServer.Common.Endpoints;
+using ExpensoServer.Common.Endpoints.Extensions;
 using ExpensoServer.Data;
 using ExpensoServer.Data.Entities;
 using ExpensoServer.Data.Enums;
@@ -26,12 +26,13 @@ public static class GetById
         ClaimsPrincipal claimsPrincipal, CancellationToken cancellationToken)
     {
         var userId = claimsPrincipal.GetUserId();
-        var account =
-            await dbContext.Accounts.FirstOrDefaultAsync(a => a.Id == id && a.UserId == userId, cancellationToken);
+        var account = await dbContext.Accounts
+            .Where(a => a.UserId == userId)
+            .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
+
         if (account == null)
             return TypedResults.NotFound();
 
-        return TypedResults.Ok(
-            new Response(account.Id, account.Name, account.Balance, account.Currency.ToString()));
+        return TypedResults.Ok(new Response(account.Id, account.Name, account.Balance, account.Currency.ToString()));
     }
 }

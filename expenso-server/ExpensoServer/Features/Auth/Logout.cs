@@ -1,4 +1,4 @@
-using ExpensoServer.Common.Api;
+using ExpensoServer.Common.Endpoints;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 

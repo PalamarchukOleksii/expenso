@@ -1,10 +1,10 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using ExpensoServer.Common.Api;
-using ExpensoServer.Common.Api.Filters;
+using ExpensoServer.Common.Auth.Constants;
+using ExpensoServer.Common.Endpoints;
+using ExpensoServer.Common.Endpoints.Filters;
 using ExpensoServer.Data;
-using ExpensoServer.Features.Auth.Constants;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
