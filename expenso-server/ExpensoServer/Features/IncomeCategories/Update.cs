@@ -48,16 +48,17 @@ public static class Update
         var userId = claimsPrincipal.GetUserId();
 
         var category =
-            await dbContext.Categories.FirstOrDefaultAsync(a => a.Id == id && a.UserId == userId, cancellationToken);
+            await dbContext.Categories.FirstOrDefaultAsync(
+                a => a.Id == id && a.UserId == userId && a.Type == CategoryType.Income, cancellationToken);
         if (category == null)
             return TypedResults.NotFound();
 
 
         if (request.Name != category.Name &&
-            await dbContext.Categories.AnyAsync(x => x.UserId == userId && x.Name == request.Name, cancellationToken))
-        {
+            await dbContext.Categories.AnyAsync(
+                x => (x.UserId == userId || x.IsDefault) && x.Name == request.Name && x.Type == CategoryType.Income,
+                cancellationToken))
             return TypedResults.Conflict();
-        }
 
         category.Name = request.Name;
         await dbContext.SaveChangesAsync(cancellationToken);

@@ -2,6 +2,7 @@ using System.Security.Claims;
 using ExpensoServer.Common.Api;
 using ExpensoServer.Common.Api.Extensions;
 using ExpensoServer.Data;
+using ExpensoServer.Data.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpensoServer.Features.IncomeCategories;
@@ -24,7 +25,7 @@ public static class GetAll
         var userId = claimsPrincipal.GetUserId();
 
         var categories = await dbContext.Categories
-            .Where(a => a.UserId == userId || a.IsDefault)
+            .Where(a => (a.UserId == userId || a.IsDefault) && a.Type == CategoryType.Income)
             .Select(a => new Response(
                 a.Id,
                 a.Name

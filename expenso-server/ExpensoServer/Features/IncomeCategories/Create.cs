@@ -42,8 +42,10 @@ public static class Create
     {
         var userId = claimsPrincipal.GetUserId();
 
-        if (await dbContext.Categories.AnyAsync(x => x.Name == request.Name && x.IsDefault, cancellationToken) ||
-            await dbContext.Categories.AnyAsync(x => x.UserId == userId && x.Name == request.Name, cancellationToken))
+        if (await dbContext.Categories.AnyAsync(
+                x => x.Name == request.Name && x.IsDefault && x.Type == CategoryType.Income, cancellationToken) ||
+            await dbContext.Categories.AnyAsync(
+                x => x.UserId == userId && x.Name == request.Name && x.Type == CategoryType.Income, cancellationToken))
             return TypedResults.Conflict();
 
         var category = new Category

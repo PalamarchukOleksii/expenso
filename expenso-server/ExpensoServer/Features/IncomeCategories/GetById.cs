@@ -2,6 +2,7 @@ using System.Security.Claims;
 using ExpensoServer.Common.Api;
 using ExpensoServer.Common.Api.Extensions;
 using ExpensoServer.Data;
+using ExpensoServer.Data.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpensoServer.Features.IncomeCategories;
@@ -24,7 +25,8 @@ public static class GetById
     {
         var userId = claimsPrincipal.GetUserId();
         var category =
-            await dbContext.Categories.FirstOrDefaultAsync(a => a.Id == id && (a.UserId == userId || a.IsDefault),
+            await dbContext.Categories.FirstOrDefaultAsync(
+                a => a.Id == id && (a.UserId == userId || a.IsDefault) && a.Type == CategoryType.Income,
                 cancellationToken);
         if (category == null)
             return TypedResults.NotFound();
