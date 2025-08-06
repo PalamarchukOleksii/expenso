@@ -65,6 +65,7 @@ public static class Create
 
         var operation = new Operation
         {
+            UserId = userId,
             ToAccountId = request.AccountId,
             CategoryId = request.CategoryId,
             Amount = request.Amount,

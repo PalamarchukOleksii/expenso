@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ExpensoServer.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250806181308_Initial")]
+    [Migration("20250806214656_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -133,6 +133,9 @@ namespace ExpensoServer.Data.Migrations
                     b.Property<Guid?>("CategoryId")
                         .HasColumnType("uuid");
 
+                    b.Property<int>("Currency")
+                        .HasColumnType("integer");
+
                     b.Property<Guid?>("FromAccountId")
                         .HasColumnType("uuid");
 
@@ -148,7 +151,7 @@ namespace ExpensoServer.Data.Migrations
                     b.Property<int>("Type")
                         .HasColumnType("integer");
 
-                    b.Property<Guid?>("UserId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -202,7 +205,8 @@ namespace ExpensoServer.Data.Migrations
                 {
                     b.HasOne("ExpensoServer.Data.Entities.User", "User")
                         .WithMany("Categories")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("User");
                 });
@@ -211,25 +215,32 @@ namespace ExpensoServer.Data.Migrations
                 {
                     b.HasOne("ExpensoServer.Data.Entities.Category", "Category")
                         .WithMany("Operations")
-                        .HasForeignKey("CategoryId");
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("ExpensoServer.Data.Entities.Account", "FromAccount")
                         .WithMany("FromOperations")
-                        .HasForeignKey("FromAccountId");
+                        .HasForeignKey("FromAccountId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("ExpensoServer.Data.Entities.Account", "ToAccount")
                         .WithMany("ToOperations")
-                        .HasForeignKey("ToAccountId");
+                        .HasForeignKey("ToAccountId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("ExpensoServer.Data.Entities.User", null)
+                    b.HasOne("ExpensoServer.Data.Entities.User", "User")
                         .WithMany("Operations")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Category");
 
                     b.Navigation("FromAccount");
 
                     b.Navigation("ToAccount");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ExpensoServer.Data.Entities.Account", b =>

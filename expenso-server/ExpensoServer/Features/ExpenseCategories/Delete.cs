@@ -26,6 +26,7 @@ public static class Delete
         var userId = claimsPrincipal.GetUserId();
 
         var category = await dbContext.Categories
+            .Include(c => c.Operations)
             .Where(x => x.Type == CategoryType.Expense)
             .FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId, cancellationToken);
 
@@ -36,6 +37,7 @@ public static class Delete
             return TypedResults.Forbid();
 
         dbContext.Categories.Remove(category);
+        
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return TypedResults.NoContent();

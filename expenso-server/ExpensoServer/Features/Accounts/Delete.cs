@@ -17,7 +17,7 @@ public static class Delete
             app.MapDelete("/{id:guid}", HandleAsync);
         }
     }
-
+    
     private static async Task<IResult> HandleAsync(
         Guid id,
         ApplicationDbContext dbContext,
@@ -26,14 +26,18 @@ public static class Delete
     {
         var userId = claimsPrincipal.GetUserId();
         var account = await dbContext.Accounts
+            .Include(a => a.FromOperations)
+            .Include(a => a.ToOperations)
             .FirstOrDefaultAsync(a => a.Id == id && a.UserId == userId, cancellationToken);
 
-        if (account == null)
+        if (account is null)
             return TypedResults.NotFound();
 
         dbContext.Accounts.Remove(account);
+        
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return TypedResults.NoContent();
     }
+
 }

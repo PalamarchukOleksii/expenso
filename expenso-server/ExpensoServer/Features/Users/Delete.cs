@@ -22,15 +22,23 @@ public static class Delete
         HttpContext httpContext, CancellationToken cancellationToken)
     {
         var userId = claimsPrincipal.GetUserId();
-        var user = await dbContext.Users
-            .FirstOrDefaultAsync(a => a.Id == userId, cancellationToken);
 
-        if (user == null)
+        var user = await dbContext.Users
+            .Include(u => u.Accounts)
+                .ThenInclude(a => a.FromOperations)
+            .Include(u => u.Accounts)
+                .ThenInclude(a => a.ToOperations)
+            .Include(u => u.Categories)
+                .ThenInclude(c => c.Operations)
+            .Include(u => u.Operations)
+            .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
+
+        if (user is null)
             return TypedResults.NotFound();
 
         dbContext.Users.Remove(user);
+
         await dbContext.SaveChangesAsync(cancellationToken);
-        
         await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
         return TypedResults.NoContent();

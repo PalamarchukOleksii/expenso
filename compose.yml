@@ -14,8 +14,23 @@ services:
     networks:
       - expenso-net
 
+  pgadmin:
+    image: docker.io/dpage/pgadmin4
+    container_name: expenso-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@expenso.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    networks:
+      - expenso-net
+
 volumes:
   expenso-data:
+  pgadmin-data:
 
 networks:
   expenso-net:
