@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 using ExpensoServer.Common.Api;
 using ExpensoServer.Common.Api.Extensions;
+using ExpensoServer.Common.Api.Filters;
 using ExpensoServer.Data;
 using ExpensoServer.Data.Entities;
 using ExpensoServer.Features.Users.Constants;
@@ -21,15 +22,13 @@ public static class Login
         public static void Map(IEndpointRouteBuilder app)
         {
             app.MapPost("/login", HandleAsync)
-                .WithRequestValidation<Request>()
-                .ProducesProblem(StatusCodes.Status401Unauthorized)
-                .Produces<Response>();
+                .AddEndpointFilter<RequestValidationFilter<Request>>();
         }
     }
 
     public record Request(string Email, string Password);
 
-    public record Response(Guid Id, string Name, string Email);
+    public record Response(Guid Id, string Email);
 
     public class Validator : AbstractValidator<Request>
     {
@@ -44,25 +43,19 @@ public static class Login
         }
     }
 
-    private static async Task<Results<Ok<Response>, ProblemHttpResult>> HandleAsync(
+    private static async Task<IResult> HandleAsync(
         Request request,
         HttpContext httpContext,
         ApplicationDbContext dbContext,
         CancellationToken cancellationToken)
     {
-        var user = await dbContext.GetUserByEmailAsync(request.Email, cancellationToken);
-        if (user is null || !VerifyHashedPassword(user.PasswordHash, request.Password))
-            return TypedResults.Problem(
-                statusCode: StatusCodes.Status401Unauthorized,
-                title: "Unauthorized",
-                detail: "The email or password provided is incorrect.",
-                type: "https://tools.ietf.org/html/rfc7235#section-3.1"
-            );
+        var user = await dbContext.Users.FirstOrDefaultAsync(x => x.Email == request.Email, cancellationToken);
+        if (user is null || !VerifyHashedPassword(user.PasswordHash, user.PasswordSalt, request.Password))
+            return TypedResults.Unauthorized();
 
         var claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new(ClaimTypes.Name, user.Name),
             new(ClaimTypes.Email, user.Email)
         };
 
@@ -71,42 +64,28 @@ public static class Login
 
         await httpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
-        return TypedResults.Ok(new Response(user.Id, user.Name, user.Email));
+        return TypedResults.Ok(new Response(user.Id, user.Email));
     }
 
-    private static async Task<User?> GetUserByEmailAsync(this ApplicationDbContext dbContext, string email,
-        CancellationToken cancellationToken)
+    private static bool VerifyHashedPassword(byte[] storedHash, byte[] storedSalt, string providedPassword)
     {
-        return await dbContext.Users.FirstOrDefaultAsync(x => x.Email == email, cancellationToken);
-    }
-
-    private static bool VerifyHashedPassword(string hashedPassword, string providedPassword)
-    {
-        var parts = hashedPassword.Split('$');
-        if (parts.Length != 2)
-            return false;
-
-        var salt = Convert.FromBase64String(parts[0]);
-        var expectedHash = Convert.FromBase64String(parts[1]);
-        var valueBytes = Encoding.UTF8.GetBytes(providedPassword);
+        var passwordBytes = Encoding.UTF8.GetBytes(providedPassword);
 
         try
         {
             var actualHash = Rfc2898DeriveBytes.Pbkdf2(
-                valueBytes,
-                salt,
+                passwordBytes,
+                storedSalt,
                 PasswordHasherParameters.Iterations,
                 PasswordHasherParameters.HashAlgorithmName,
-                expectedHash.Length
+                storedHash.Length
             );
 
-            return CryptographicOperations.FixedTimeEquals(expectedHash, actualHash);
+            return CryptographicOperations.FixedTimeEquals(storedHash, actualHash);
         }
         finally
         {
-            Array.Clear(salt);
-            Array.Clear(expectedHash);
-            Array.Clear(valueBytes);
+            Array.Clear(passwordBytes);
         }
     }
 }

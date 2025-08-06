@@ -9,8 +9,8 @@ public static class ConfigureApplication
     {
         if (app.Environment.IsDevelopment())
         {
-            app.MapOpenApi();
-            app.UseReDoc(options => { options.SpecUrl = "/openapi/v1.json"; });
+            app.UseSwagger();
+            app.UseSwaggerUI();
 
             await app.EnsureDatabaseCreated();
         }

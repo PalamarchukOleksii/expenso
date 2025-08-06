@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using ExpensoServer.Data;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -14,14 +16,16 @@ public static class ConfigureServices
         builder.AddAuthentication();
         builder.AddAuthorization();
         builder.AddValidators();
-        builder.AddOpenApi();
+        builder.AddSwagger();
         builder.AddRequestsLogging();
         builder.AddProblemDetails();
     }
 
-    private static void AddOpenApi(this WebApplicationBuilder builder)
+    private static void AddSwagger(this WebApplicationBuilder builder)
     {
-        builder.Services.AddOpenApi();
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen(options => options.CustomSchemaIds(type =>
+            type.FullName?.Replace('+', '.') ?? type.Name));
     }
 
     private static void AddDatabase(this WebApplicationBuilder builder)

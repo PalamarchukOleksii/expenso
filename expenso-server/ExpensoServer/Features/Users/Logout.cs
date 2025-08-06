@@ -11,12 +11,11 @@ public static class Logout
     {
         public static void Map(IEndpointRouteBuilder app)
         {
-            app.MapPost("/logout", HandleAsync)
-                .Produces(StatusCodes.Status204NoContent);
+            app.MapPost("/logout", HandleAsync);
         }
     }
 
-    private static async Task<NoContent> HandleAsync(
+    private static async Task<IResult> HandleAsync(
         HttpContext context,
         CancellationToken cancellationToken)
     {
