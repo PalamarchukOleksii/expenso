@@ -12,12 +12,24 @@ public static class Endpoints
         var endpoints = app.MapGroup(Routes.Prefix);
 
         endpoints.MapUserEndpoints();
+        endpoints.MapAuthEndpoints();
         endpoints.MapAccountEndpoints();
         endpoints.MapIncomeCategoryEndpoints();
         endpoints.MapExpenseCategoryEndpoints();
     }
 
     private static void MapUserEndpoints(this IEndpointRouteBuilder app)
+    {
+        var endpoints = app.MapGroup(Routes.Segments.Users)
+            .WithTags(Routes.Segments.Users);
+
+        endpoints.MapAuthorizedGroup()
+            .MapEndpoint<Features.Users.GetCurrent.Endpoints>()
+            .MapEndpoint<Features.Users.Update.Endpoint>()
+            .MapEndpoint<Features.Users.Delete.Endpoint>();
+    }
+
+    private static void MapAuthEndpoints(this IEndpointRouteBuilder app)
     {
         var endpoints = app.MapGroup(Routes.Segments.Auth)
             .WithTags(Routes.Segments.Auth);
