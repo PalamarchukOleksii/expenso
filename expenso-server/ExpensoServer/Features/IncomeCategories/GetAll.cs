@@ -2,10 +2,9 @@ using System.Security.Claims;
 using ExpensoServer.Common.Api;
 using ExpensoServer.Common.Api.Extensions;
 using ExpensoServer.Data;
-using ExpensoServer.Data.Enums;
 using Microsoft.EntityFrameworkCore;
 
-namespace ExpensoServer.Features.Accounts;
+namespace ExpensoServer.Features.IncomeCategories;
 
 public static class GetAll
 {
@@ -17,23 +16,21 @@ public static class GetAll
         }
     }
 
-    public record Response(Guid Id, string Name, decimal Balance, string Currency);
+    public record Response(Guid Id, string Name);
 
     private static async Task<IResult> HandleAsync(ClaimsPrincipal claimsPrincipal, ApplicationDbContext dbContext,
         CancellationToken cancellationToken)
     {
         var userId = claimsPrincipal.GetUserId();
 
-        var accounts = await dbContext.Accounts
-            .Where(a => a.UserId == userId)
+        var categories = await dbContext.Categories
+            .Where(a => a.UserId == userId || a.IsDefault)
             .Select(a => new Response(
                 a.Id,
-                a.Name,
-                a.Balance,
-                a.Currency.ToString()
+                a.Name
             ))
             .ToListAsync(cancellationToken);
 
-        return TypedResults.Ok(accounts);
+        return TypedResults.Ok(categories);
     }
 }

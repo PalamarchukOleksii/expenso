@@ -2,16 +2,14 @@ using System.Security.Cryptography;
 using System.Text;
 using ExpensoServer.Common.Api;
 using ExpensoServer.Common.Api.Constants;
-using ExpensoServer.Common.Api.Extensions;
 using ExpensoServer.Common.Api.Filters;
 using ExpensoServer.Data;
 using ExpensoServer.Data.Entities;
-using ExpensoServer.Features.Users.Constants;
+using ExpensoServer.Features.Auth.Constants;
 using FluentValidation;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
-namespace ExpensoServer.Features.Users;
+namespace ExpensoServer.Features.Auth;
 
 public static class Register
 {
@@ -61,7 +59,7 @@ public static class Register
         {
             Email = request.Email,
             PasswordHash = hashingResult.Hash,
-            PasswordSalt = hashingResult.Salt,
+            PasswordSalt = hashingResult.Salt
         };
 
         dbContext.Users.Add(user);
@@ -72,7 +70,7 @@ public static class Register
             new Response(user.Id, user.Email));
     }
 
-    private static  PasswordHashResult HashPassword(string password)
+    private static PasswordHashResult HashPassword(string password)
     {
         var salt = RandomNumberGenerator.GetBytes(PasswordHasherParameters.SaltSize);
         var passwordBytes = Encoding.UTF8.GetBytes(password);
@@ -91,9 +89,9 @@ public static class Register
         }
         finally
         {
-            Array.Clear(passwordBytes); 
+            Array.Clear(passwordBytes);
         }
     }
-    
+
     private record PasswordHashResult(byte[] Salt, byte[] Hash);
 }

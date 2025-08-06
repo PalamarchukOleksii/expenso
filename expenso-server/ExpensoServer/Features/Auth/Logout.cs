@@ -1,9 +1,8 @@
 using ExpensoServer.Common.Api;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace ExpensoServer.Features.Users;
+namespace ExpensoServer.Features.Auth;
 
 public static class Logout
 {

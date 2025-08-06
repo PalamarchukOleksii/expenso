@@ -1,23 +1,21 @@
 using System.Security.Claims;
 using ExpensoServer.Common.Api;
-using ExpensoServer.Common.Api.Constants;
 using ExpensoServer.Common.Api.Extensions;
 using ExpensoServer.Common.Api.Filters;
 using ExpensoServer.Data;
-using ExpensoServer.Data.Entities;
 using ExpensoServer.Data.Enums;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpensoServer.Features.IncomeCategories;
 
-public static class Create
+public static class Update
 {
     public class Endpoint : IEndpoint
     {
         public static void Map(IEndpointRouteBuilder app)
         {
-            app.MapPost("/create", HandleAsync)
+            app.MapPatch("/{id:guid}", HandleAsync)
                 .AddEndpointFilter<RequestValidationFilter<Request>>();
         }
     }
@@ -33,31 +31,37 @@ public static class Create
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("Name is required.")
                 .MinimumLength(3).WithMessage("Name must be at least 3 characters long.")
-                .MaximumLength(50).WithMessage("Name must be at most 50 characters long.");
+                .MaximumLength(100).WithMessage("Name must be at most 100 characters long.");
         }
     }
 
-    private static async Task<IResult> HandleAsync(Request request, ApplicationDbContext dbContext,
-        ClaimsPrincipal claimsPrincipal, HttpContext httpContext, CancellationToken cancellationToken)
+    private static async Task<IResult> HandleAsync(
+        Guid id,
+        Request request,
+        ApplicationDbContext dbContext,
+        ClaimsPrincipal claimsPrincipal,
+        CancellationToken cancellationToken)
     {
+        if (await dbContext.Categories.AnyAsync(a => a.Id == id && a.IsDefault, cancellationToken))
+            return TypedResults.Forbid();
+
         var userId = claimsPrincipal.GetUserId();
 
-        if (await dbContext.Categories.AnyAsync(x => x.Name == request.Name && x.IsDefault, cancellationToken) ||
+        var category =
+            await dbContext.Categories.FirstOrDefaultAsync(a => a.Id == id && a.UserId == userId, cancellationToken);
+        if (category == null)
+            return TypedResults.NotFound();
+
+
+        if (request.Name != category.Name &&
             await dbContext.Categories.AnyAsync(x => x.UserId == userId && x.Name == request.Name, cancellationToken))
-            return TypedResults.Conflict();
-
-        var category = new Category
         {
-            UserId = userId,
-            Name = request.Name,
-            Type = CategoryType.Income
-        };
+            return TypedResults.Conflict();
+        }
 
-        dbContext.Categories.Add(category);
+        category.Name = request.Name;
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return TypedResults.Created(
-            $"{httpContext.Request.Scheme}://{httpContext.Request.Host}/{ApiRoutes.Prefix}/{ApiRoutes.Segments.IncomeCategories}/{category.Id}",
-            new Response(category.Id, category.Name));
+        return TypedResults.Ok(new Response(category.Id, category.Name));
     }
 }

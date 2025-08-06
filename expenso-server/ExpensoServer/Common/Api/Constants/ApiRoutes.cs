@@ -6,6 +6,7 @@ public static class ApiRoutes
 
     public static class Segments
     {
+        public const string Auth = "auth";
         public const string Users = "users";
         public const string Accounts = "accounts";
         public const string IncomeCategories = "income-categories";

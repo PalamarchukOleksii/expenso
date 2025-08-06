@@ -1,6 +1,6 @@
 using System.Security.Cryptography;
 
-namespace ExpensoServer.Features.Users.Constants;
+namespace ExpensoServer.Features.Auth.Constants;
 
 public static class PasswordHasherParameters
 {

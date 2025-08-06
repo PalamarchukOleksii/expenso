@@ -5,7 +5,6 @@ using ExpensoServer.Common.Api.Filters;
 using ExpensoServer.Data;
 using ExpensoServer.Data.Entities;
 using ExpensoServer.Data.Enums;
-using ExpensoServer.Features.Users;
 using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
@@ -55,9 +54,9 @@ public static class Update
         ClaimsPrincipal claimsPrincipal,
         CancellationToken cancellationToken)
     {
-        if (!Enum.TryParse<Currency>(request.Currency, ignoreCase: false, out var currencyEnum))
+        if (!Enum.TryParse<Currency>(request.Currency, false, out var currencyEnum))
             return TypedResults.BadRequest();
-        
+
         var userId = claimsPrincipal.GetUserId();
 
         var account =

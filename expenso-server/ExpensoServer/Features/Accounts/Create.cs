@@ -53,9 +53,9 @@ public static class Create
         HttpContext httpContext,
         CancellationToken cancellationToken)
     {
-        if (!Enum.TryParse<Currency>(request.Currency, ignoreCase: false, out var currencyEnum))
+        if (!Enum.TryParse<Currency>(request.Currency, false, out var currencyEnum))
             return TypedResults.BadRequest();
-        
+
         var userId = claimsPrincipal.GetUserId();
 
         var existedAccount =

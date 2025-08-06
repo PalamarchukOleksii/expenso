@@ -1,6 +1,7 @@
 using ExpensoServer.Common.Api;
 using ExpensoServer.Common.Api.Constants;
 using ExpensoServer.Features;
+using ExpensoServer.Features.Auth;
 
 namespace ExpensoServer;
 
@@ -17,15 +18,15 @@ public static class Endpoints
 
     private static void MapUserEndpoints(this IEndpointRouteBuilder app)
     {
-        var endpoints = app.MapGroup(ApiRoutes.Segments.Users)
-            .WithTags(ApiRoutes.Segments.Users);
+        var endpoints = app.MapGroup(ApiRoutes.Segments.Auth)
+            .WithTags(ApiRoutes.Segments.Auth);
 
         endpoints.MapPublicGroup()
-            .MapEndpoint<Features.Users.Register.Endpoint>()
-            .MapEndpoint<Features.Users.Login.Endpoint>();
+            .MapEndpoint<Features.Auth.Register.Endpoint>()
+            .MapEndpoint<Features.Auth.Login.Endpoint>();
 
         endpoints.MapAuthorizedGroup()
-            .MapEndpoint<Features.Users.Logout.Endpoint>();
+            .MapEndpoint<Features.Auth.Logout.Endpoint>();
     }
 
     private static void MapAccountEndpoints(this IEndpointRouteBuilder app)
@@ -47,7 +48,11 @@ public static class Endpoints
             .WithTags(ApiRoutes.Segments.IncomeCategories);
 
         endpoints.MapAuthorizedGroup()
-            .MapEndpoint<Features.IncomeCategories.Create.Endpoint>();
+            .MapEndpoint<Features.IncomeCategories.Create.Endpoint>()
+            .MapEndpoint<Features.IncomeCategories.Update.Endpoint>()
+            .MapEndpoint<Features.IncomeCategories.Delete.Endpoint>()
+            .MapEndpoint<Features.IncomeCategories.GetById.Endpoint>()
+            .MapEndpoint<Features.IncomeCategories.GetAll.Endpoint>();
     }
 
     private static RouteGroupBuilder MapPublicGroup(this IEndpointRouteBuilder app, string? prefix = null)
