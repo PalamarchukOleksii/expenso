@@ -13,7 +13,7 @@ public static class GetAll
     {
         public static void Map(IEndpointRouteBuilder app)
         {
-            app.MapGet("", HandleAsync);
+            app.MapGet("/", HandleAsync);
         }
     }
     

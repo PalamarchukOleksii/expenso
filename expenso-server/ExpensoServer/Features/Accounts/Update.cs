@@ -18,7 +18,7 @@ public static class Update
     {
         public static void Map(IEndpointRouteBuilder app)
         {
-            app.MapPatch("{id:guid}", HandleAsync)
+            app.MapPatch("/{id:guid}", HandleAsync)
                 .AddEndpointFilter<RequestValidationFilter<Request>>();
         }
     }

@@ -15,7 +15,7 @@ public static class GetById
     {
         public static void Map(IEndpointRouteBuilder app)
         {
-            app.MapGet("{id:guid}", HandleAsync);
+            app.MapGet("/{id:guid}", HandleAsync);
         }
     }
 

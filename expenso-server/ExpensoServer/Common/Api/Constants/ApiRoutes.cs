@@ -8,6 +8,6 @@ public static class ApiRoutes
     {
         public const string Users = "users";
         public const string Accounts = "accounts";
-        public const string IncomingCategories = "incoming-categories";
+        public const string IncomeCategories = "income-categories";
     }
 }

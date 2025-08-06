@@ -14,7 +14,7 @@ public static class Delete
     {
         public static void Map(IEndpointRouteBuilder app)
         {
-            app.MapDelete("{id:guid}", HandleAsync);
+            app.MapDelete("/{id:guid}", HandleAsync);
         }
     }
 
