@@ -27,13 +27,13 @@ public static class GetById
     {
         var userId = claimsPrincipal.GetUserId();
 
-        var category = await dbContext.Categories
+        var response = await dbContext.Categories
             .Where(c => (c.UserId == userId || c.IsDefault) && c.Type == CategoryType.Income)
+            .Select(a => new Response(a.Id, a.Name))
             .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
 
-        if (category == null)
-            return TypedResults.NotFound();
-
-        return TypedResults.Ok(new Response(category.Id, category.Name));
+        return response is null
+            ? TypedResults.NotFound()
+            : TypedResults.Ok(response);
     }
 }

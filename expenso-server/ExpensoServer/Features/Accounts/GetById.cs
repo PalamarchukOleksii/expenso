@@ -26,13 +26,13 @@ public static class GetById
         ClaimsPrincipal claimsPrincipal, CancellationToken cancellationToken)
     {
         var userId = claimsPrincipal.GetUserId();
-        var account = await dbContext.Accounts
+        var response = await dbContext.Accounts
             .Where(a => a.UserId == userId)
+            .Select(a => new Response(a.Id, a.Name, a.Balance, a.Currency.ToString()))
             .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
 
-        if (account == null)
-            return TypedResults.NotFound();
-
-        return TypedResults.Ok(new Response(account.Id, account.Name, account.Balance, account.Currency.ToString()));
+        return response is null
+            ? TypedResults.NotFound()
+            : TypedResults.Ok(response);
     }
 }
