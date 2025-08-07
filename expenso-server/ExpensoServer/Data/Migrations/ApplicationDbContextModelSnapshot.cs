@@ -202,8 +202,7 @@ namespace ExpensoServer.Data.Migrations
                 {
                     b.HasOne("ExpensoServer.Data.Entities.User", "User")
                         .WithMany("Categories")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });
@@ -212,18 +211,15 @@ namespace ExpensoServer.Data.Migrations
                 {
                     b.HasOne("ExpensoServer.Data.Entities.Category", "Category")
                         .WithMany("Operations")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("CategoryId");
 
                     b.HasOne("ExpensoServer.Data.Entities.Account", "FromAccount")
                         .WithMany("FromOperations")
-                        .HasForeignKey("FromAccountId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("FromAccountId");
 
                     b.HasOne("ExpensoServer.Data.Entities.Account", "ToAccount")
                         .WithMany("ToOperations")
-                        .HasForeignKey("ToAccountId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("ToAccountId");
 
                     b.HasOne("ExpensoServer.Data.Entities.User", "User")
                         .WithMany("Operations")

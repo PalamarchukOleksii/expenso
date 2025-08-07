@@ -88,7 +88,11 @@ public static class Endpoints
             .WithTags(Routes.Segments.IncomeOperations);
 
         endpoints.MapAuthorizedGroup()
-            .MapEndpoint<Features.IncomeOperations.Create.Endpoint>();
+            .MapEndpoint<Features.IncomeOperations.Create.Endpoint>()
+            .MapEndpoint<Features.IncomeOperations.Update.Endpoint>()
+            .MapEndpoint<Features.IncomeOperations.Delete.Endpoint>()
+            .MapEndpoint<Features.IncomeOperations.GetById.Endpoint>()
+            .MapEndpoint<Features.IncomeOperations.GetAll.Endpoint>();
     }
 
     private static RouteGroupBuilder MapPublicGroup(this IEndpointRouteBuilder app, string? prefix = null)

@@ -25,11 +25,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             .WithMany(e => e.ToOperations)
             .HasForeignKey(e => e.ToAccountId);
 
-        foreach (var foreignKey in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
-        {
-            foreignKey.DeleteBehavior = DeleteBehavior.Cascade;
-        }
-
         modelBuilder.Entity<Category>().HasData(
             new Category
             {

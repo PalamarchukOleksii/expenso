@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ExpensoServer.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250806214656_Initial")]
+    [Migration("20250807141736_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -205,8 +205,7 @@ namespace ExpensoServer.Data.Migrations
                 {
                     b.HasOne("ExpensoServer.Data.Entities.User", "User")
                         .WithMany("Categories")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });
@@ -215,18 +214,15 @@ namespace ExpensoServer.Data.Migrations
                 {
                     b.HasOne("ExpensoServer.Data.Entities.Category", "Category")
                         .WithMany("Operations")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("CategoryId");
 
                     b.HasOne("ExpensoServer.Data.Entities.Account", "FromAccount")
                         .WithMany("FromOperations")
-                        .HasForeignKey("FromAccountId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("FromAccountId");
 
                     b.HasOne("ExpensoServer.Data.Entities.Account", "ToAccount")
                         .WithMany("ToOperations")
-                        .HasForeignKey("ToAccountId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("ToAccountId");
 
                     b.HasOne("ExpensoServer.Data.Entities.User", "User")
                         .WithMany("Operations")
