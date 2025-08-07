@@ -11,6 +11,9 @@ public class Operation
     public Guid? CategoryId { get; set; }
     public decimal Amount { get; set; }
     public Currency Currency { get; set; }
+    public decimal? ConvertedAmount { get; set; }
+    public Currency? ConvertedCurrency { get; set; }
+    public decimal? ExchangeRate { get; set; }
     public OperationType Type { get; set; }
     public DateTime Timestamp { get; set; } = DateTime.UtcNow;
     public string? Note { get; set; }
