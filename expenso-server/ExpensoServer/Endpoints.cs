@@ -2,6 +2,7 @@ using ExpensoServer.Common.Endpoints;
 using ExpensoServer.Common.Endpoints.Constants;
 using ExpensoServer.Features;
 using ExpensoServer.Features.Auth;
+using ExpensoServer.Features.ExpenseOperations;
 
 namespace ExpensoServer;
 
@@ -17,6 +18,7 @@ public static class Endpoints
         endpoints.MapIncomeCategoryEndpoints();
         endpoints.MapExpenseCategoryEndpoints();
         endpoints.MapIncomeOperationsEndpoints();
+        endpoints.MapExpenseOperationsEndpoints();
     }
 
     private static void MapUserEndpoints(this IEndpointRouteBuilder app)
@@ -94,6 +96,20 @@ public static class Endpoints
             .MapEndpoint<Features.IncomeOperations.GetById.Endpoint>()
             .MapEndpoint<Features.IncomeOperations.GetAll.Endpoint>();
     }
+    
+    private static void MapExpenseOperationsEndpoints(this IEndpointRouteBuilder app)
+    {
+        var endpoints = app.MapGroup(Routes.Segments.ExpenseOperations)
+            .WithTags(Routes.Segments.ExpenseOperations);
+
+        endpoints.MapAuthorizedGroup()
+            .MapEndpoint<Features.ExpenseOperations.Create.Endpoint>()
+            .MapEndpoint<Features.ExpenseOperations.Update.Endpoint>()
+            .MapEndpoint<Features.ExpenseOperations.Delete.Endpoint>()
+            .MapEndpoint<Features.ExpenseOperations.GetById.Endpoint>()
+            .MapEndpoint<Features.ExpenseOperations.GetAll.Endpoint>();
+    }
+
 
     private static RouteGroupBuilder MapPublicGroup(this IEndpointRouteBuilder app, string? prefix = null)
     {
