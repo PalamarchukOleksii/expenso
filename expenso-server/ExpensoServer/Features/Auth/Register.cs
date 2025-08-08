@@ -7,6 +7,7 @@ using ExpensoServer.Common.Endpoints.Filters;
 using ExpensoServer.Data;
 using ExpensoServer.Data.Entities;
 using FluentValidation;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpensoServer.Features.Auth;
@@ -18,7 +19,9 @@ public static class Register
         public static void Map(IEndpointRouteBuilder app)
         {
             app.MapPost("/register", HandleAsync)
-                .AddEndpointFilter<RequestValidationFilter<Request>>();
+                .AddEndpointFilter<RequestValidationFilter<Request>>()
+                .Produces<Response>(StatusCodes.Status201Created)
+                .ProducesProblem(StatusCodes.Status409Conflict);
         }
     }
 
@@ -44,14 +47,17 @@ public static class Register
         }
     }
 
-    private static async Task<IResult> HandleAsync(
+    private static async Task<Results<Created<Response>, ProblemHttpResult>> HandleAsync(
         Request request,
         ApplicationDbContext dbContext,
         HttpContext httpContext,
         CancellationToken cancellationToken)
     {
         if (await dbContext.Users.AnyAsync(x => x.Email == request.Email, cancellationToken))
-            return TypedResults.Conflict();
+            return TypedResults.Problem(
+                title: "Email Conflict",
+                detail: $"User with email '{request.Email}' already exists.",
+                statusCode: StatusCodes.Status409Conflict);
 
         var hashingResult = HashPassword(request.Password);
 

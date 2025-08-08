@@ -3,11 +3,13 @@ using System.Security.Cryptography;
 using System.Text;
 using ExpensoServer.Common.Auth.Constants;
 using ExpensoServer.Common.Endpoints;
+using ExpensoServer.Common.Endpoints.Extensions;
 using ExpensoServer.Common.Endpoints.Filters;
 using ExpensoServer.Data;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpensoServer.Features.Auth;
@@ -19,7 +21,9 @@ public static class Login
         public static void Map(IEndpointRouteBuilder app)
         {
             app.MapPost("/login", HandleAsync)
-                .AddEndpointFilter<RequestValidationFilter<Request>>();
+                .WithRequestValidation<Request>()
+                .Produces<Response>()
+                .ProducesProblem(StatusCodes.Status401Unauthorized);
         }
     }
 
@@ -40,7 +44,7 @@ public static class Login
         }
     }
 
-    private static async Task<IResult> HandleAsync(
+    private static async Task<Results<Ok<Response>, ProblemHttpResult>> HandleAsync(
         Request request,
         HttpContext httpContext,
         ApplicationDbContext dbContext,
@@ -48,7 +52,10 @@ public static class Login
     {
         var user = await dbContext.Users.FirstOrDefaultAsync(x => x.Email == request.Email, cancellationToken);
         if (user is null || !VerifyHashedPassword(user.PasswordHash, user.PasswordSalt, request.Password))
-            return TypedResults.Unauthorized();
+            return TypedResults.Problem(
+                title: "Authentication Failed",
+                detail: "Invalid email or password.",
+                statusCode: StatusCodes.Status401Unauthorized);
 
         var claims = new List<Claim>
         {
