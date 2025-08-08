@@ -35,6 +35,9 @@ jobs:
       - name: Install redoc-cli
         run: npm install -g redoc-cli
 
+      - name: Restore NuGet packages
+        run: dotnet restore ./expenso-server/ExpensoServer/ExpensoServer.csproj
+
       - name: Build the API project
         run: dotnet build ./expenso-server/ExpensoServer/ExpensoServer.csproj --no-restore
 
