@@ -3,7 +3,6 @@ using ExpensoServer.Common.Endpoints;
 using ExpensoServer.Common.Endpoints.Extensions;
 using ExpensoServer.Common.Endpoints.Filters;
 using ExpensoServer.Data;
-using ExpensoServer.Data.Entities;
 using ExpensoServer.Data.Enums;
 using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -18,7 +17,11 @@ public static class Update
         public static void Map(IEndpointRouteBuilder app)
         {
             app.MapPatch("/{id:guid}", HandleAsync)
-                .AddEndpointFilter<RequestValidationFilter<Request>>();
+                .AddEndpointFilter<RequestValidationFilter<Request>>()
+                .Produces<Response>()
+                .ProducesProblem(StatusCodes.Status400BadRequest)
+                .ProducesProblem(StatusCodes.Status404NotFound)
+                .ProducesProblem(StatusCodes.Status409Conflict);
         }
     }
 
@@ -47,7 +50,7 @@ public static class Update
         }
     }
 
-    private static async Task<IResult> HandleAsync(
+    private static async Task<Results<Ok<Response>, ProblemHttpResult>> HandleAsync(
         Guid id,
         Request request,
         ApplicationDbContext dbContext,
@@ -59,8 +62,10 @@ public static class Update
         if (request.Currency is not null)
         {
             if (!Enum.TryParse<Currency>(request.Currency, false, out var parsedCurrency))
-                return TypedResults.BadRequest();
-
+                return TypedResults.Problem(
+                    title: "Invalid Currency",
+                    detail: $"The currency '{request.Currency}' is not supported.",
+                    statusCode: StatusCodes.Status400BadRequest);
             currencyEnum = parsedCurrency;
         }
 
@@ -71,7 +76,10 @@ public static class Update
             .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
 
         if (account is null)
-            return TypedResults.NotFound();
+            return TypedResults.Problem(
+                title: "Account Not Found",
+                detail: $"The account with ID '{id}' was not found for the current user.",
+                statusCode: StatusCodes.Status404NotFound);
 
         if (request.Name is not null && request.Name != account.Name)
         {
@@ -81,7 +89,10 @@ public static class Update
                 x.Id != id, cancellationToken);
 
             if (isNameConflict)
-                return TypedResults.Conflict();
+                return TypedResults.Problem(
+                    title: "Account Name Conflict",
+                    detail: $"An account with the name '{request.Name}' already exists for this user.",
+                    statusCode: StatusCodes.Status409Conflict);
         }
 
         var hasChanges = false;
@@ -110,6 +121,7 @@ public static class Update
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return TypedResults.Ok(new Response(account.Id, account.Name, account.Balance, account.Currency.ToString()));
+        return TypedResults.Ok(
+            new Response(account.Id, account.Name, account.Balance, account.Currency.ToString()));
     }
 }

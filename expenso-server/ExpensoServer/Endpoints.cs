@@ -86,7 +86,7 @@ public static class Endpoints
             .MapEndpoint<Features.ExpenseCategories.GetById.Endpoint>()
             .MapEndpoint<Features.ExpenseCategories.GetAll.Endpoint>();
     }
-    
+
     private static void MapIncomeOperationsEndpoints(this IEndpointRouteBuilder app)
     {
         var endpoints = app.MapGroup(Routes.Segments.IncomeOperations)
@@ -99,7 +99,7 @@ public static class Endpoints
             .MapEndpoint<Features.IncomeOperations.GetById.Endpoint>()
             .MapEndpoint<Features.IncomeOperations.GetAll.Endpoint>();
     }
-    
+
     private static void MapExpenseOperationsEndpoints(this IEndpointRouteBuilder app)
     {
         var endpoints = app.MapGroup(Routes.Segments.ExpenseOperations)
@@ -134,7 +134,7 @@ public static class Endpoints
             .MapEndpoint<Features.TransferOperations.GetById.Endpoint>()
             .MapEndpoint<Features.TransferOperations.GetAll.Endpoint>();
     }
-    
+
     private static RouteGroupBuilder MapPublicGroup(this IEndpointRouteBuilder app, string? prefix = null)
     {
         return app.MapGroup(prefix ?? string.Empty)

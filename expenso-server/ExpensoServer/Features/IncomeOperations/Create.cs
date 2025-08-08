@@ -21,23 +21,31 @@ public static class Create
                 .AddEndpointFilter<RequestValidationFilter<Request>>();
         }
     }
-    
+
     public record Request(Guid AccountId, Guid CategoryId, decimal Amount, string? Note);
-    public record Response(Guid Id, Guid AccountId, Guid CategoryId, decimal Amount, string Currency, DateTime Timestamp, string? Note);
-    
+
+    public record Response(
+        Guid Id,
+        Guid AccountId,
+        Guid CategoryId,
+        decimal Amount,
+        string Currency,
+        DateTime Timestamp,
+        string? Note);
+
     public class Validator : AbstractValidator<Request>
     {
         public Validator()
         {
             RuleFor(x => x.AccountId)
                 .NotEmpty().WithMessage("AccountId is required.");
-            
+
             RuleFor(x => x.CategoryId)
                 .NotEmpty().WithMessage("CategoryId is required.");
-            
+
             RuleFor(x => x.Amount)
                 .GreaterThan(0).WithMessage("Amount must be greater than zero.");
-            
+
             RuleFor(x => x.Note)
                 .MaximumLength(500).WithMessage("Note cannot exceed 500 characters.");
         }
@@ -47,17 +55,17 @@ public static class Create
         ApplicationDbContext dbContext, HttpContext httpContext, CancellationToken cancellationToken)
     {
         var userId = claimsPrincipal.GetUserId();
-        
-        var account = await dbContext.Accounts.FirstOrDefaultAsync(x => 
-            x.UserId == userId && 
+
+        var account = await dbContext.Accounts.FirstOrDefaultAsync(x =>
+            x.UserId == userId &&
             x.Id == request.AccountId, cancellationToken);
-        
+
         if (account is null)
             return TypedResults.NotFound();
-        
-        var categoryExist = await dbContext.Categories.AnyAsync(x => 
+
+        var categoryExist = await dbContext.Categories.AnyAsync(x =>
             x.Id == request.CategoryId &&
-            (x.UserId == userId || x.IsDefault) && 
+            (x.UserId == userId || x.IsDefault) &&
             x.Type == CategoryType.Income, cancellationToken);
 
         if (!categoryExist)
@@ -71,11 +79,11 @@ public static class Create
             Amount = request.Amount,
             Currency = account.Currency,
             Type = OperationType.Income,
-            Note = request.Note,
+            Note = request.Note
         };
-        
+
         account.Balance += request.Amount;
-        
+
         dbContext.Operations.Add(operation);
         await dbContext.SaveChangesAsync(cancellationToken);
 
@@ -90,7 +98,7 @@ public static class Create
             operation.Timestamp,
             operation.Note
         );
-        
+
         return TypedResults.Created(location, response);
     }
 }

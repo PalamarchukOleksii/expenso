@@ -37,16 +37,10 @@ public static class Delete
             return TypedResults.NotFound();
 
         var fromAccount = operation.FromAccount;
-        if (fromAccount is not null)
-        {
-            fromAccount.Balance += operation.Amount;
-        }
+        if (fromAccount is not null) fromAccount.Balance += operation.Amount;
 
         var toAccount = operation.ToAccount;
-        if (toAccount is not null)
-        {
-            toAccount.Balance -= operation.ConvertedAmount ?? operation.Amount;
-        }
+        if (toAccount is not null) toAccount.Balance -= operation.ConvertedAmount ?? operation.Amount;
 
         dbContext.Operations.Remove(operation);
         await dbContext.SaveChangesAsync(cancellationToken);

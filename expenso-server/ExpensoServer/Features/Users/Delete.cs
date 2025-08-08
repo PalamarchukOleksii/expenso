@@ -25,11 +25,11 @@ public static class Delete
 
         var user = await dbContext.Users
             .Include(u => u.Accounts)
-                .ThenInclude(a => a.FromOperations)
+            .ThenInclude(a => a.FromOperations)
             .Include(u => u.Accounts)
-                .ThenInclude(a => a.ToOperations)
+            .ThenInclude(a => a.ToOperations)
             .Include(u => u.Categories)
-                .ThenInclude(c => c.Operations)
+            .ThenInclude(c => c.Operations)
             .Include(u => u.Operations)
             .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
 

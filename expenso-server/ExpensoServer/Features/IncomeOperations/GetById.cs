@@ -17,7 +17,14 @@ public static class GetById
         }
     }
 
-    public record Response(Guid Id, Guid AccountId, Guid CategoryId, decimal Amount, string Currency, DateTime Timestamp, string? Note);
+    public record Response(
+        Guid Id,
+        Guid AccountId,
+        Guid CategoryId,
+        decimal Amount,
+        string Currency,
+        DateTime Timestamp,
+        string? Note);
 
     private static async Task<IResult> HandleAsync(
         Guid id,

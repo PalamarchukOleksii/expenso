@@ -48,12 +48,12 @@ public static class Update
 
         if (user is null)
             return Results.NotFound();
-        
+
         if (user.Email == request.Email)
             return Results.Ok(new Response(user.Id, user.Email));
-        
-        var isEmailConflict = await dbContext.Users.AnyAsync(u => 
-            u.Email == request.Email && 
+
+        var isEmailConflict = await dbContext.Users.AnyAsync(u =>
+            u.Email == request.Email &&
             u.Id != userId, cancellationToken);
 
         if (isEmailConflict)

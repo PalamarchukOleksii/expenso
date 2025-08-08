@@ -66,9 +66,9 @@ public static class Update
         var operation = await dbContext.Operations
             .Include(x => x.FromAccount)
             .FirstOrDefaultAsync(x =>
-                    x.Id == id &&
-                    x.UserId == userId &&
-                    x.Type == OperationType.Expense, cancellationToken);
+                x.Id == id &&
+                x.UserId == userId &&
+                x.Type == OperationType.Expense, cancellationToken);
 
         if (operation is null)
             return TypedResults.NotFound();
@@ -76,7 +76,7 @@ public static class Update
         var oldAccount = operation.FromAccount!;
         var oldAmount = operation.Amount;
         var newAmount = request.Amount ?? oldAmount;
-        
+
         if (request.AccountId.HasValue && request.AccountId != operation.FromAccountId)
         {
             var newAccount = await dbContext.Accounts
@@ -98,7 +98,7 @@ public static class Update
             oldAccount.Balance -= diff;
             operation.Amount = newAmount;
         }
-        
+
         if (request.CategoryId.HasValue && request.CategoryId != operation.CategoryId)
         {
             var categoryExists = await dbContext.Categories.AnyAsync(c =>
@@ -112,10 +112,7 @@ public static class Update
             operation.CategoryId = request.CategoryId;
         }
 
-        if (request.Note is not null && request.Note != operation.Note)
-        {
-            operation.Note = request.Note;
-        }
+        if (request.Note is not null && request.Note != operation.Note) operation.Note = request.Note;
 
         await dbContext.SaveChangesAsync(cancellationToken);
 

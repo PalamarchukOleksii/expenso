@@ -19,7 +19,10 @@ public static class Create
         public static void Map(IEndpointRouteBuilder app)
         {
             app.MapPost("/create", HandleAsync)
-                .AddEndpointFilter<RequestValidationFilter<Request>>();
+                .WithRequestValidation<Request>()
+                .Produces<Response>(StatusCodes.Status201Created)
+                .ProducesProblem(StatusCodes.Status400BadRequest)
+                .ProducesProblem(StatusCodes.Status409Conflict);
         }
     }
 
@@ -46,7 +49,7 @@ public static class Create
         }
     }
 
-    private static async Task<IResult> HandleAsync(
+    private static async Task<Results<Created<Response>, ProblemHttpResult>> HandleAsync(
         Request request,
         ApplicationDbContext dbContext,
         ClaimsPrincipal claimsPrincipal,
@@ -54,7 +57,10 @@ public static class Create
         CancellationToken cancellationToken)
     {
         if (!Enum.TryParse<Currency>(request.Currency, false, out var currencyEnum))
-            return TypedResults.BadRequest();
+            return TypedResults.Problem(
+                title: "Invalid Currency",
+                detail: $"The currency '{request.Currency}' is not supported.",
+                statusCode: StatusCodes.Status400BadRequest);
 
         var userId = claimsPrincipal.GetUserId();
 
@@ -62,7 +68,10 @@ public static class Create
             .AnyAsync(x => x.UserId == userId && x.Name == request.Name, cancellationToken);
 
         if (nameExist)
-            return TypedResults.Conflict();
+            return TypedResults.Problem(
+                title: "Account Name Already Exists",
+                detail: $"An account with the name '{request.Name}' already exists for this user.",
+                statusCode: StatusCodes.Status409Conflict);
 
         var account = new Account
         {

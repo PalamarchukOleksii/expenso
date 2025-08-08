@@ -13,15 +13,14 @@ public static class Get
             app.MapGet("/", HandleAsync);
         }
     }
-    
+
     public record Response(string FromCurrency, string ToCurrency, decimal Rate);
-    
+
     private class CurrencyApiResponse
     {
         public string Date { get; set; } = null!;
-        
-        [JsonExtensionData]
-        public Dictionary<string, JsonElement> Rates { get; set; } = null!;
+
+        [JsonExtensionData] public Dictionary<string, JsonElement> Rates { get; set; } = null!;
     }
 
     private static async Task<IResult> HandleAsync(

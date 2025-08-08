@@ -17,7 +17,14 @@ public static class GetAll
         }
     }
 
-    public record Response(Guid Id, Guid AccountId, Guid CategoryId, decimal Amount, string Currency, DateTime Timestamp, string? Note);
+    public record Response(
+        Guid Id,
+        Guid AccountId,
+        Guid CategoryId,
+        decimal Amount,
+        string Currency,
+        DateTime Timestamp,
+        string? Note);
 
     private static async Task<IResult> HandleAsync(
         ClaimsPrincipal claimsPrincipal,
@@ -29,11 +36,11 @@ public static class GetAll
         var categories = await dbContext.Operations
             .Where(x => x.UserId == userId && x.Type == OperationType.Expense)
             .Select(x => new Response(
-                x.Id, 
-                x.FromAccountId!.Value, 
+                x.Id,
+                x.FromAccountId!.Value,
                 x.CategoryId!.Value,
                 x.Amount,
-                x.Currency.ToString(), 
+                x.Currency.ToString(),
                 x.Timestamp,
                 x.Note))
             .ToListAsync(cancellationToken);

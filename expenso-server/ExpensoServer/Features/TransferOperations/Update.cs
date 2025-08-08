@@ -93,20 +93,23 @@ public static class Update
         var oldAmount = operation.Amount;
         var oldConvertedAmount = operation.ConvertedAmount ?? operation.Amount;
         var newAmount = request.Amount ?? oldAmount;
-        
+
         if ((request.FromAccountId.HasValue && request.FromAccountId != operation.FromAccountId) ||
             (request.ToAccountId.HasValue && request.ToAccountId != operation.ToAccountId))
         {
             oldFromAccount.Balance += oldAmount;
             oldToAccount.Balance -= oldConvertedAmount;
-            
+
             var newFromAccount = await dbContext.Accounts
-                .FirstOrDefaultAsync(a => a.Id == (request.FromAccountId ?? operation.FromAccountId) && a.UserId == userId, cancellationToken);
+                .FirstOrDefaultAsync(
+                    a => a.Id == (request.FromAccountId ?? operation.FromAccountId) && a.UserId == userId,
+                    cancellationToken);
             if (newFromAccount is null)
                 return TypedResults.NotFound();
 
             var newToAccount = await dbContext.Accounts
-                .FirstOrDefaultAsync(a => a.Id == (request.ToAccountId ?? operation.ToAccountId) && a.UserId == userId, cancellationToken);
+                .FirstOrDefaultAsync(a => a.Id == (request.ToAccountId ?? operation.ToAccountId) && a.UserId == userId,
+                    cancellationToken);
             if (newToAccount is null)
                 return TypedResults.NotFound();
 
@@ -119,7 +122,7 @@ public static class Update
                     return TypedResults.BadRequest();
                 convertedAmount *= request.ExchangeRate.Value;
             }
-            
+
             newFromAccount.Balance -= newAmount;
             newToAccount.Balance += convertedAmount;
 
@@ -135,7 +138,6 @@ public static class Update
         }
         else if (request.Amount.HasValue && request.Amount != oldAmount)
         {
-            
             var requiresConversion = oldFromAccount.Currency != oldToAccount.Currency;
             var convertedAmount = newAmount;
 
@@ -145,10 +147,10 @@ public static class Update
                     return TypedResults.BadRequest();
                 convertedAmount = newAmount * request.ExchangeRate.Value;
             }
-            
+
             oldFromAccount.Balance += oldAmount;
             oldFromAccount.Balance -= newAmount;
-            
+
             oldToAccount.Balance -= oldConvertedAmount;
             oldToAccount.Balance += convertedAmount;
 
@@ -157,10 +159,7 @@ public static class Update
             operation.ExchangeRate = requiresConversion ? request.ExchangeRate : null;
         }
 
-        if (request.Note is not null && request.Note != operation.Note)
-        {
-            operation.Note = request.Note;
-        }
+        if (request.Note is not null && request.Note != operation.Note) operation.Note = request.Note;
 
         await dbContext.SaveChangesAsync(cancellationToken);
 

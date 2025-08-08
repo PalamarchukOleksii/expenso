@@ -47,7 +47,7 @@ public static class Create
 
             RuleFor(x => x.ToAccountId)
                 .NotEmpty().WithMessage("ToAccountId is required.");
-            
+
             RuleFor(x => x)
                 .Must(x => x.FromAccountId != x.ToAccountId)
                 .WithMessage("Cannot transfer to the same account.");
@@ -57,7 +57,7 @@ public static class Create
 
             RuleFor(x => x.Note)
                 .MaximumLength(500).WithMessage("Note cannot exceed 500 characters.");
-            
+
             RuleFor(x => x.ExchangeRate)
                 .GreaterThan(0).When(x => x.ExchangeRate.HasValue)
                 .WithMessage("ExchangeRate must be greater than zero if provided.");
@@ -86,16 +86,13 @@ public static class Create
 
         if (toAccount is null)
             return TypedResults.NotFound();
-        
+
         var convertedAmount = request.Amount;
 
         if (fromAccount.Currency != toAccount.Currency)
         {
-            if (!request.ExchangeRate.HasValue)
-            {
-                return TypedResults.BadRequest();
-            }
-            
+            if (!request.ExchangeRate.HasValue) return TypedResults.BadRequest();
+
             convertedAmount *= request.ExchangeRate.Value;
         }
 
@@ -113,7 +110,7 @@ public static class Create
             ConvertedCurrency = request.ExchangeRate.HasValue ? toAccount.Currency : null,
             ExchangeRate = request.ExchangeRate,
             Type = OperationType.Transfer,
-            Note = request.Note,
+            Note = request.Note
         };
 
         dbContext.Operations.Add(operation);

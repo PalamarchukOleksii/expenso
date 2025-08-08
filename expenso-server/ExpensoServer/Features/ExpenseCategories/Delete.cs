@@ -37,7 +37,7 @@ public static class Delete
             return TypedResults.Forbid();
 
         dbContext.Categories.Remove(category);
-        
+
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return TypedResults.NoContent();

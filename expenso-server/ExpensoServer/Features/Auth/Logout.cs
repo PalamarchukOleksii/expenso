@@ -19,7 +19,7 @@ public static class Logout
         CancellationToken cancellationToken)
     {
         await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        
+
         return TypedResults.NoContent();
     }
 }

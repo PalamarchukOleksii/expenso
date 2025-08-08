@@ -2,8 +2,8 @@ using System.Security.Claims;
 using ExpensoServer.Common.Endpoints;
 using ExpensoServer.Common.Endpoints.Extensions;
 using ExpensoServer.Data;
-using ExpensoServer.Data.Enums;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace ExpensoServer.Features.Accounts;
 
@@ -13,13 +13,16 @@ public static class GetAll
     {
         public static void Map(IEndpointRouteBuilder app)
         {
-            app.MapGet("/", HandleAsync);
+            app.MapGet("/", HandleAsync)
+                .Produces<Response[]>();
         }
     }
 
     public record Response(Guid Id, string Name, decimal Balance, string Currency);
 
-    private static async Task<IResult> HandleAsync(ClaimsPrincipal claimsPrincipal, ApplicationDbContext dbContext,
+    private static async Task<Ok<Response[]>> HandleAsync(
+        ClaimsPrincipal claimsPrincipal,
+        ApplicationDbContext dbContext,
         CancellationToken cancellationToken)
     {
         var userId = claimsPrincipal.GetUserId();
@@ -27,7 +30,7 @@ public static class GetAll
         var accounts = await dbContext.Accounts
             .Where(a => a.UserId == userId)
             .Select(a => new Response(a.Id, a.Name, a.Balance, a.Currency.ToString()))
-            .ToListAsync(cancellationToken);
+            .ToArrayAsync(cancellationToken);
 
         return TypedResults.Ok(accounts);
     }
