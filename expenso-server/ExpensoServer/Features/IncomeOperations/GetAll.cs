@@ -3,6 +3,7 @@ using ExpensoServer.Common.Endpoints;
 using ExpensoServer.Common.Endpoints.Extensions;
 using ExpensoServer.Data;
 using ExpensoServer.Data.Enums;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpensoServer.Features.IncomeOperations;
@@ -13,7 +14,8 @@ public static class GetAll
     {
         public static void Map(IEndpointRouteBuilder app)
         {
-            app.MapGet("/", HandleAsync);
+            app.MapGet("/", HandleAsync)
+                .Produces<Response[]>();
         }
     }
 
@@ -33,7 +35,7 @@ public static class GetAll
     {
         var userId = claimsPrincipal.GetUserId();
 
-        var categories = await dbContext.Operations
+        var operations = await dbContext.Operations
             .Where(x => x.UserId == userId && x.Type == OperationType.Income)
             .Select(x => new Response(
                 x.Id,
@@ -45,6 +47,6 @@ public static class GetAll
                 x.Note))
             .ToListAsync(cancellationToken);
 
-        return TypedResults.Ok(categories);
+        return TypedResults.Ok(operations);
     }
 }

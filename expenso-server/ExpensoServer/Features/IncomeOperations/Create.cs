@@ -7,6 +7,8 @@ using ExpensoServer.Data;
 using ExpensoServer.Data.Entities;
 using ExpensoServer.Data.Enums;
 using FluentValidation;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpensoServer.Features.IncomeOperations;
@@ -18,7 +20,9 @@ public static class Create
         public static void Map(IEndpointRouteBuilder app)
         {
             app.MapPost("/create", HandleAsync)
-                .AddEndpointFilter<RequestValidationFilter<Request>>();
+                .WithRequestValidation<Request>()
+                .Produces<Response>(StatusCodes.Status201Created)
+                .ProducesProblem(StatusCodes.Status404NotFound);
         }
     }
 
@@ -51,8 +55,12 @@ public static class Create
         }
     }
 
-    private static async Task<IResult> HandleAsync(Request request, ClaimsPrincipal claimsPrincipal,
-        ApplicationDbContext dbContext, HttpContext httpContext, CancellationToken cancellationToken)
+    private static async Task<Results<Created<Response>, ProblemHttpResult>> HandleAsync(
+        Request request,
+        ClaimsPrincipal claimsPrincipal,
+        ApplicationDbContext dbContext,
+        HttpContext httpContext,
+        CancellationToken cancellationToken)
     {
         var userId = claimsPrincipal.GetUserId();
 
@@ -61,7 +69,10 @@ public static class Create
             x.Id == request.AccountId, cancellationToken);
 
         if (account is null)
-            return TypedResults.NotFound();
+            return TypedResults.Problem(
+                title: "Account Not Found",
+                detail: $"Account with ID '{request.AccountId}' was not found for the current user.",
+                statusCode: StatusCodes.Status404NotFound);
 
         var categoryExist = await dbContext.Categories.AnyAsync(x =>
             x.Id == request.CategoryId &&
@@ -69,7 +80,10 @@ public static class Create
             x.Type == CategoryType.Income, cancellationToken);
 
         if (!categoryExist)
-            return TypedResults.NotFound();
+            return TypedResults.Problem(
+                title: "Income Category Not Found",
+                detail: $"Income category with ID '{request.CategoryId}' was not found for the current user.",
+                statusCode: StatusCodes.Status404NotFound);
 
         var operation = new Operation
         {
@@ -89,6 +103,7 @@ public static class Create
 
         var location =
             $"{httpContext.Request.Scheme}://{httpContext.Request.Host}/{Routes.Prefix}/{Routes.Segments.IncomeOperations}/{operation.Id}";
+
         var response = new Response(
             operation.Id,
             operation.ToAccountId!.Value,
