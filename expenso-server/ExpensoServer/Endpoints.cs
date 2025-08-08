@@ -20,6 +20,7 @@ public static class Endpoints
         endpoints.MapIncomeOperationsEndpoints();
         endpoints.MapExpenseOperationsEndpoints();
         endpoints.MapTransferOperationsEndpoints();
+        endpoints.MapExchangeRateEndpoints();
     }
 
     private static void MapUserEndpoints(this IEndpointRouteBuilder app)
@@ -111,13 +112,26 @@ public static class Endpoints
             .MapEndpoint<Features.ExpenseOperations.GetAll.Endpoint>();
     }
 
+    private static void MapExchangeRateEndpoints(this IEndpointRouteBuilder app)
+    {
+        var endpoints = app.MapGroup(Routes.Segments.ExchangeRates)
+            .WithTags(Routes.Segments.ExchangeRates);
+
+        endpoints.MapAuthorizedGroup()
+            .MapEndpoint<Features.ExchangeRates.Get.Endpoint>();
+    }
+
     private static void MapTransferOperationsEndpoints(this IEndpointRouteBuilder app)
     {
         var endpoints = app.MapGroup(Routes.Segments.TransferOperations)
             .WithTags(Routes.Segments.TransferOperations);
 
         endpoints.MapAuthorizedGroup()
-            .MapEndpoint<Features.TransferOperations.Create.Endpoint>();
+            .MapEndpoint<Features.TransferOperations.Create.Endpoint>()
+            .MapEndpoint<Features.TransferOperations.Update.Endpoint>()
+            .MapEndpoint<Features.TransferOperations.Delete.Endpoint>()
+            .MapEndpoint<Features.TransferOperations.GetById.Endpoint>()
+            .MapEndpoint<Features.TransferOperations.GetAll.Endpoint>();
     }
     
     private static RouteGroupBuilder MapPublicGroup(this IEndpointRouteBuilder app, string? prefix = null)

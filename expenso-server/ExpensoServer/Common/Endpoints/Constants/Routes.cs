@@ -14,5 +14,6 @@ public static class Routes
         public const string IncomeOperations = "income-operations";
         public const string ExpenseOperations = "expense-operations";
         public const string TransferOperations = "transfer-operations";
+        public const string ExchangeRates = "exchange-rates";
     }
 }

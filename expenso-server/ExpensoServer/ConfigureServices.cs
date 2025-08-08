@@ -19,6 +19,7 @@ public static class ConfigureServices
         builder.AddSwagger();
         builder.AddRequestsLogging();
         builder.AddProblemDetails();
+        builder.AddHttpClient();
     }
 
     private static void AddSwagger(this WebApplicationBuilder builder)
@@ -83,5 +84,10 @@ public static class ConfigureServices
                 context.ProblemDetails.Extensions.TryAdd("traceId", activity?.Id);
             };
         });
+    }
+
+    private static void AddHttpClient(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddHttpClient();
     }
 }

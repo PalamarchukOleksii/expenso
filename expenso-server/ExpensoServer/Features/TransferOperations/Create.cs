@@ -23,7 +23,7 @@ public static class Create
         }
     }
 
-    public record Request(Guid FromAccountId, Guid ToAccountId, decimal Amount, string? Note);
+    public record Request(Guid FromAccountId, Guid ToAccountId, decimal Amount, string? Note, decimal? ExchangeRate);
 
     public record Response(
         Guid Id,
@@ -38,7 +38,6 @@ public static class Create
         decimal? ExchangeRate = null
     );
 
-
     public class Validator : AbstractValidator<Request>
     {
         public Validator()
@@ -48,16 +47,22 @@ public static class Create
 
             RuleFor(x => x.ToAccountId)
                 .NotEmpty().WithMessage("ToAccountId is required.");
+            
+            RuleFor(x => x)
+                .Must(x => x.FromAccountId != x.ToAccountId)
+                .WithMessage("Cannot transfer to the same account.");
 
             RuleFor(x => x.Amount)
                 .GreaterThan(0).WithMessage("Amount must be greater than zero.");
 
             RuleFor(x => x.Note)
                 .MaximumLength(500).WithMessage("Note cannot exceed 500 characters.");
+            
+            RuleFor(x => x.ExchangeRate)
+                .GreaterThan(0).When(x => x.ExchangeRate.HasValue)
+                .WithMessage("ExchangeRate must be greater than zero if provided.");
         }
     }
-
-    private static readonly HttpClient _httpClient = new();
 
     private static async Task<IResult> HandleAsync(
         Request request,
@@ -81,15 +86,17 @@ public static class Create
 
         if (toAccount is null)
             return TypedResults.NotFound();
-
-        decimal? exchangeRate = null;
+        
         var convertedAmount = request.Amount;
 
         if (fromAccount.Currency != toAccount.Currency)
         {
-            exchangeRate = await GetExchangeRateAsync(fromAccount.Currency.ToString(), toAccount.Currency.ToString(),
-                cancellationToken);
-            convertedAmount *= exchangeRate.Value;
+            if (!request.ExchangeRate.HasValue)
+            {
+                return TypedResults.BadRequest();
+            }
+            
+            convertedAmount *= request.ExchangeRate.Value;
         }
 
         fromAccount.Balance -= request.Amount;
@@ -102,9 +109,9 @@ public static class Create
             ToAccountId = toAccount.Id,
             Amount = request.Amount,
             Currency = fromAccount.Currency,
-            ConvertedAmount = exchangeRate.HasValue ? convertedAmount : null,
-            ConvertedCurrency = exchangeRate.HasValue ? toAccount.Currency : null,
-            ExchangeRate = exchangeRate,
+            ConvertedAmount = request.ExchangeRate.HasValue ? convertedAmount : null,
+            ConvertedCurrency = request.ExchangeRate.HasValue ? toAccount.Currency : null,
+            ExchangeRate = request.ExchangeRate,
             Type = OperationType.Transfer,
             Note = request.Note,
         };
@@ -129,25 +136,5 @@ public static class Create
         );
 
         return TypedResults.Created(location, response);
-    }
-
-    private static async Task<decimal> GetExchangeRateAsync(string fromCurrency, string toCurrency, CancellationToken cancellationToken)
-    {
-        if (string.Equals(fromCurrency, toCurrency, StringComparison.OrdinalIgnoreCase))
-            return 1m;
-
-        var url = $"https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/{fromCurrency.ToLower()}.json";
-        var json = await _httpClient.GetStringAsync(url, cancellationToken);
-
-        using var document = JsonDocument.Parse(json);
-        var root = document.RootElement;
-
-        if (!root.TryGetProperty(fromCurrency.ToLower(), out var ratesElement))
-            throw new InvalidOperationException($"Missing base currency '{fromCurrency}' in response.");
-
-        if (!ratesElement.TryGetProperty(toCurrency.ToLower(), out var rateElement))
-            throw new InvalidOperationException($"Exchange rate not found for '{fromCurrency}' → '{toCurrency}'.");
-
-        return rateElement.GetDecimal();
     }
 }
