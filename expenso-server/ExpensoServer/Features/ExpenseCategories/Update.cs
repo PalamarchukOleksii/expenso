@@ -5,6 +5,8 @@ using ExpensoServer.Common.Endpoints.Filters;
 using ExpensoServer.Data;
 using ExpensoServer.Data.Enums;
 using FluentValidation;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpensoServer.Features.ExpenseCategories;
@@ -16,7 +18,11 @@ public static class Update
         public static void Map(IEndpointRouteBuilder app)
         {
             app.MapPatch("/{id:guid}", HandleAsync)
-                .AddEndpointFilter<RequestValidationFilter<Request>>();
+                .WithRequestValidation<Request>()
+                .Produces<Response>()
+                .ProducesProblem(StatusCodes.Status404NotFound)
+                .ProducesProblem(StatusCodes.Status403Forbidden)
+                .ProducesProblem(StatusCodes.Status409Conflict);
         }
     }
 
@@ -35,7 +41,7 @@ public static class Update
         }
     }
 
-    private static async Task<IResult> HandleAsync(
+    private static async Task<Results<Ok<Response>, ProblemHttpResult>> HandleAsync(
         Guid id,
         Request request,
         ApplicationDbContext dbContext,
@@ -49,13 +55,18 @@ public static class Update
             .FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId, cancellationToken);
 
         if (category == null)
-            return TypedResults.NotFound();
+            return TypedResults.Problem(
+                title: "Not Found",
+                detail: $"Expense category with ID '{id}' was not found.",
+                statusCode: StatusCodes.Status404NotFound);
 
         if (category.IsDefault)
-            return TypedResults.Forbid();
+            return TypedResults.Problem(
+                title: "Forbidden",
+                detail: "Cannot update the default expense category.",
+                statusCode: StatusCodes.Status403Forbidden);
 
-        if (request.Name == category.Name)
-            return TypedResults.Ok(new Response(category.Id, category.Name));
+        if (request.Name == category.Name) return TypedResults.Ok(new Response(category.Id, category.Name));
 
         var isNameConflict = await dbContext.Categories.AnyAsync(x =>
             x.Type == CategoryType.Expense &&
@@ -64,7 +75,10 @@ public static class Update
             (x.UserId == userId || x.IsDefault), cancellationToken);
 
         if (isNameConflict)
-            return TypedResults.Conflict();
+            return TypedResults.Problem(
+                title: "Conflict",
+                detail: $"An expense category with the name '{request.Name}' already exists.",
+                statusCode: StatusCodes.Status409Conflict);
 
         category.Name = request.Name;
         await dbContext.SaveChangesAsync(cancellationToken);

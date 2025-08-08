@@ -1,8 +1,12 @@
 using System.Security.Claims;
 using ExpensoServer.Common.Endpoints;
+using ExpensoServer.Common.Endpoints.Constants;
 using ExpensoServer.Common.Endpoints.Extensions;
+using ExpensoServer.Common.Endpoints.Filters;
 using ExpensoServer.Data;
 using ExpensoServer.Data.Enums;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpensoServer.Features.ExpenseCategories;
@@ -13,11 +17,14 @@ public static class Delete
     {
         public static void Map(IEndpointRouteBuilder app)
         {
-            app.MapDelete("/{id:guid}", HandleAsync);
+            app.MapDelete("/{id:guid}", HandleAsync)
+                .Produces(StatusCodes.Status204NoContent)
+                .ProducesProblem(StatusCodes.Status404NotFound)
+                .ProducesProblem(StatusCodes.Status403Forbidden);
         }
     }
 
-    private static async Task<IResult> HandleAsync(
+    private static async Task<Results<NoContent, ProblemHttpResult>> HandleAsync(
         Guid id,
         ApplicationDbContext dbContext,
         ClaimsPrincipal claimsPrincipal,
@@ -31,10 +38,16 @@ public static class Delete
             .FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId, cancellationToken);
 
         if (category == null)
-            return TypedResults.NotFound();
+            return TypedResults.Problem(
+                title: "Not Found",
+                detail: $"Expense category with id '{id}' was not found.",
+                statusCode: StatusCodes.Status404NotFound);
 
         if (category.IsDefault)
-            return TypedResults.Forbid();
+            return TypedResults.Problem(
+                title: "Forbidden",
+                detail: "Cannot delete the default expense category.",
+                statusCode: StatusCodes.Status403Forbidden);
 
         dbContext.Categories.Remove(category);
 

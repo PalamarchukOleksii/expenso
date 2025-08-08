@@ -7,6 +7,8 @@ using ExpensoServer.Data;
 using ExpensoServer.Data.Entities;
 using ExpensoServer.Data.Enums;
 using FluentValidation;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpensoServer.Features.ExpenseCategories;
@@ -18,7 +20,9 @@ public static class Create
         public static void Map(IEndpointRouteBuilder app)
         {
             app.MapPost("/create", HandleAsync)
-                .AddEndpointFilter<RequestValidationFilter<Request>>();
+                .WithRequestValidation<Request>()
+                .Produces<Response>(StatusCodes.Status201Created)
+                .ProducesProblem(StatusCodes.Status409Conflict);
         }
     }
 
@@ -37,7 +41,7 @@ public static class Create
         }
     }
 
-    private static async Task<IResult> HandleAsync(
+    private static async Task<Results<Created<Response>, ProblemHttpResult>> HandleAsync(
         Request request,
         ApplicationDbContext dbContext,
         ClaimsPrincipal claimsPrincipal,
@@ -52,7 +56,10 @@ public static class Create
             (c.UserId == userId || c.IsDefault), cancellationToken);
 
         if (nameExists)
-            return TypedResults.Conflict();
+            return TypedResults.Problem(
+                title: "Conflict",
+                detail: $"An expense category with the name '{request.Name}' already exists.",
+                statusCode: StatusCodes.Status409Conflict);
 
         var category = new Category
         {
@@ -62,6 +69,7 @@ public static class Create
         };
 
         dbContext.Categories.Add(category);
+
         await dbContext.SaveChangesAsync(cancellationToken);
 
         var location =
