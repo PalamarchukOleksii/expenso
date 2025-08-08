@@ -1,5 +1,3 @@
-using ExpensoServer.Data.Enums;
-
 namespace ExpensoServer.Data.Entities;
 
 public class User

@@ -1,8 +1,5 @@
 using ExpensoServer.Common.Endpoints;
 using ExpensoServer.Common.Endpoints.Constants;
-using ExpensoServer.Features;
-using ExpensoServer.Features.Auth;
-using ExpensoServer.Features.ExpenseOperations;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExpensoServer;

@@ -4,7 +4,6 @@ using System.Text;
 using ExpensoServer.Common.Auth.Constants;
 using ExpensoServer.Common.Endpoints;
 using ExpensoServer.Common.Endpoints.Extensions;
-using ExpensoServer.Common.Endpoints.Filters;
 using ExpensoServer.Data;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication;

@@ -2,7 +2,6 @@ using System.Security.Claims;
 using ExpensoServer.Common.Endpoints;
 using ExpensoServer.Common.Endpoints.Constants;
 using ExpensoServer.Common.Endpoints.Extensions;
-using ExpensoServer.Common.Endpoints.Filters;
 using ExpensoServer.Data;
 using ExpensoServer.Data.Entities;
 using ExpensoServer.Data.Enums;
