@@ -3,6 +3,8 @@ using ExpensoServer.Common.Endpoints;
 using ExpensoServer.Common.Endpoints.Extensions;
 using ExpensoServer.Data;
 using ExpensoServer.Data.Enums;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpensoServer.Features.ExpenseOperations;
@@ -13,7 +15,8 @@ public static class GetAll
     {
         public static void Map(IEndpointRouteBuilder app)
         {
-            app.MapGet("/", HandleAsync);
+            app.MapGet("/", HandleAsync)
+                .Produces<Response[]>();
         }
     }
 
@@ -26,14 +29,14 @@ public static class GetAll
         DateTime Timestamp,
         string? Note);
 
-    private static async Task<IResult> HandleAsync(
+    private static async Task<Ok<Response[]>> HandleAsync(
         ClaimsPrincipal claimsPrincipal,
         ApplicationDbContext dbContext,
         CancellationToken cancellationToken)
     {
         var userId = claimsPrincipal.GetUserId();
 
-        var categories = await dbContext.Operations
+        var operations = await dbContext.Operations
             .Where(x => x.UserId == userId && x.Type == OperationType.Expense)
             .Select(x => new Response(
                 x.Id,
@@ -43,8 +46,8 @@ public static class GetAll
                 x.Currency.ToString(),
                 x.Timestamp,
                 x.Note))
-            .ToListAsync(cancellationToken);
+            .ToArrayAsync(cancellationToken);
 
-        return TypedResults.Ok(categories);
+        return TypedResults.Ok(operations);
     }
 }

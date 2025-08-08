@@ -5,6 +5,8 @@ using ExpensoServer.Common.Endpoints.Filters;
 using ExpensoServer.Data;
 using ExpensoServer.Data.Enums;
 using FluentValidation;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpensoServer.Features.ExpenseOperations;
@@ -16,7 +18,9 @@ public static class Update
         public static void Map(IEndpointRouteBuilder app)
         {
             app.MapPatch("/{id:guid}", HandleAsync)
-                .AddEndpointFilter<RequestValidationFilter<Request>>();
+                .WithRequestValidation<Request>()
+                .Produces<Response>()
+                .ProducesProblem(StatusCodes.Status404NotFound);
         }
     }
 
@@ -53,7 +57,7 @@ public static class Update
         }
     }
 
-    private static async Task<IResult> HandleAsync(
+    private static async Task<Results<Ok<Response>, ProblemHttpResult>> HandleAsync(
         Guid id,
         Request request,
         ClaimsPrincipal claimsPrincipal,
@@ -71,7 +75,10 @@ public static class Update
                 x.Type == OperationType.Expense, cancellationToken);
 
         if (operation is null)
-            return TypedResults.NotFound();
+            return TypedResults.Problem(
+                title: "Not Found",
+                detail: $"Expense operation with ID '{id}' was not found.",
+                statusCode: StatusCodes.Status404NotFound);
 
         var oldAccount = operation.FromAccount!;
         var oldAmount = operation.Amount;
@@ -83,14 +90,17 @@ public static class Update
                 .FirstOrDefaultAsync(a => a.Id == request.AccountId && a.UserId == userId, cancellationToken);
 
             if (newAccount is null)
-                return TypedResults.NotFound();
+                return TypedResults.Problem(
+                    title: "Not Found",
+                    detail: $"Account with ID '{request.AccountId}' was not found.",
+                    statusCode: StatusCodes.Status404NotFound);
 
             oldAccount.Balance += oldAmount;
             newAccount.Balance -= newAmount;
 
-            operation.ToAccountId = newAccount.Id;
+            operation.FromAccountId = newAccount.Id;
             operation.Currency = newAccount.Currency;
-            operation.ToAccount = newAccount;
+            operation.FromAccount = newAccount;
         }
         else if (request.Amount.HasValue && request.Amount != oldAmount)
         {
@@ -107,12 +117,16 @@ public static class Update
                 c.Type == CategoryType.Expense, cancellationToken);
 
             if (!categoryExists)
-                return TypedResults.NotFound();
+                return TypedResults.Problem(
+                    title: "Not Found",
+                    detail: $"Expense category with ID '{request.CategoryId}' was not found.",
+                    statusCode: StatusCodes.Status404NotFound);
 
             operation.CategoryId = request.CategoryId;
         }
 
-        if (request.Note is not null && request.Note != operation.Note) operation.Note = request.Note;
+        if (request.Note is not null && request.Note != operation.Note)
+            operation.Note = request.Note;
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
