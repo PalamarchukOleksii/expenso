@@ -4,6 +4,15 @@ on:
   push:
     branches:
       - main
+    paths:
+      - '.github/workflows/publish-redoc.yml'
+      - 'expenso-server/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/publish-redoc.yml'
+      - 'expenso-server/**'
 
 jobs:
   publish-redoc:
@@ -27,10 +36,10 @@ jobs:
         run: npm install -g redoc-cli
 
       - name: Build the API project
-        run: dotnet build --no-restore
+        run: dotnet build ./expenso-server/ExpensoServer/ExpensoServer.csproj --no-restore
 
       - name: Run the API in background
-        run: dotnet run --no-build --urls http://localhost:5000 &
+        run: dotnet run --project ./expenso-server/ExpensoServer/ExpensoServer.csproj --no-build --urls http://localhost:5000 &
 
       - name: Wait for API to be ready
         run: |
