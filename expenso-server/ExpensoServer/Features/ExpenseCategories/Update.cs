@@ -1,6 +1,6 @@
 using System.Security.Claims;
-using ExpensoServer.Common.Endpoints;
-using ExpensoServer.Common.Endpoints.Extensions;
+using ExpensoServer.Common.Abstractions;
+using ExpensoServer.Common.Extensions;
 using ExpensoServer.Data;
 using ExpensoServer.Data.Enums;
 using FluentValidation;

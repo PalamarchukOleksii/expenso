@@ -1,3 +1,4 @@
+using ExpensoServer.Common.Extensions;
 using ExpensoServer.Data;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -14,17 +15,18 @@ public static class ConfigureServices
         builder.AddAuthentication();
         builder.AddAuthorization();
         builder.AddValidators();
-        builder.AddSwagger();
+        builder.AddOpenApi();
         builder.AddRequestsLogging();
         builder.AddProblemDetails();
         builder.AddHttpClient();
     }
 
-    private static void AddSwagger(this WebApplicationBuilder builder)
+    private static void AddOpenApi(this WebApplicationBuilder builder)
     {
-        builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen(options => options.CustomSchemaIds(type =>
-            type.FullName?.Replace('+', '.') ?? type.Name));
+        builder.Services.AddOpenApi(config =>
+        {
+            config.CustomSchemaIds(x => x.FullName?.Replace("+", ".", StringComparison.Ordinal));
+        });
     }
 
     private static void AddDatabase(this WebApplicationBuilder builder)

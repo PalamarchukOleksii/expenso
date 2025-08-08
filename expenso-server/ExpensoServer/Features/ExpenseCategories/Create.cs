@@ -1,7 +1,7 @@
 using System.Security.Claims;
-using ExpensoServer.Common.Endpoints;
-using ExpensoServer.Common.Endpoints.Constants;
-using ExpensoServer.Common.Endpoints.Extensions;
+using ExpensoServer.Common.Abstractions;
+using ExpensoServer.Common.Constants;
+using ExpensoServer.Common.Extensions;
 using ExpensoServer.Data;
 using ExpensoServer.Data.Entities;
 using ExpensoServer.Data.Enums;
@@ -71,7 +71,7 @@ public static class Create
         await dbContext.SaveChangesAsync(cancellationToken);
 
         var location =
-            $"{httpContext.Request.Scheme}://{httpContext.Request.Host}/{Routes.Prefix}/{Routes.Segments.ExpenseCategories}/{category.Id}";
+            $"{httpContext.Request.Scheme}://{httpContext.Request.Host}/{EndpointRoutes.Prefix}/{EndpointRoutes.Segments.ExpenseCategories}/{category.Id}";
 
         return TypedResults.Created(location, new Response(category.Id, category.Name));
     }

@@ -1,8 +1,8 @@
-using ExpensoServer.Common.Endpoints.Filters;
+using ExpensoServer.Common.Filters;
 
-namespace ExpensoServer.Common.Endpoints.Extensions;
+namespace ExpensoServer.Common.Extensions;
 
-public static class RouteHandlerBuilderValidationExtensions
+public static class RouteHandlerBuilderExtensions
 {
     public static RouteHandlerBuilder WithRequestValidation<TRequest>(this RouteHandlerBuilder builder)
     {

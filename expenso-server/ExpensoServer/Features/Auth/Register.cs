@@ -1,9 +1,8 @@
 using System.Security.Cryptography;
 using System.Text;
-using ExpensoServer.Common.Auth.Constants;
-using ExpensoServer.Common.Endpoints;
-using ExpensoServer.Common.Endpoints.Constants;
-using ExpensoServer.Common.Endpoints.Filters;
+using ExpensoServer.Common.Abstractions;
+using ExpensoServer.Common.Constants;
+using ExpensoServer.Common.Filters;
 using ExpensoServer.Data;
 using ExpensoServer.Data.Entities;
 using FluentValidation;
@@ -72,7 +71,7 @@ public static class Register
         await dbContext.SaveChangesAsync(cancellationToken);
 
         var location =
-            $"{httpContext.Request.Scheme}://{httpContext.Request.Host}/{Routes.Prefix}/{Routes.Segments.Users}/{user.Id}";
+            $"{httpContext.Request.Scheme}://{httpContext.Request.Host}/{EndpointRoutes.Prefix}/{EndpointRoutes.Segments.Users}/{user.Id}";
 
         return TypedResults.Created(location, new Response(user.Id, user.Email));
     }

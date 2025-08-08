@@ -1,5 +1,6 @@
 using ExpensoServer.Data;
 using Microsoft.EntityFrameworkCore;
+using Scalar.AspNetCore;
 
 namespace ExpensoServer;
 
@@ -9,8 +10,8 @@ public static class ConfigureApplication
     {
         if (app.Environment.IsDevelopment())
         {
-            app.UseSwagger();
-            app.UseSwaggerUI();
+            app.MapOpenApi();
+            app.MapScalarApiReference();
 
             await app.EnsureDatabaseCreated();
         }

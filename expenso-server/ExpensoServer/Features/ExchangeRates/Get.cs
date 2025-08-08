@@ -1,6 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using ExpensoServer.Common.Endpoints;
+using ExpensoServer.Common.Abstractions;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace ExpensoServer.Features.ExchangeRates;

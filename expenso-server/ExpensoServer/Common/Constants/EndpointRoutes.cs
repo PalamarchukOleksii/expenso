@@ -1,6 +1,6 @@
-namespace ExpensoServer.Common.Endpoints.Constants;
+namespace ExpensoServer.Common.Constants;
 
-public static class Routes
+public static class EndpointRoutes
 {
     public const string Prefix = "api";
 

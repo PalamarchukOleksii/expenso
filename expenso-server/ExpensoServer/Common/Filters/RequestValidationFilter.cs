@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace ExpensoServer.Common.Endpoints.Filters;
+namespace ExpensoServer.Common.Filters;
 
 public class RequestValidationFilter<TRequest>(IValidator<TRequest> validator) : IEndpointFilter
 {

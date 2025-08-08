@@ -1,4 +1,4 @@
-namespace ExpensoServer.Common.Endpoints;
+namespace ExpensoServer.Common.Abstractions;
 
 public interface IEndpoint
 {
