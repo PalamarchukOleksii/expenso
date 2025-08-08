@@ -3,6 +3,7 @@ using ExpensoServer.Common.Endpoints;
 using ExpensoServer.Common.Endpoints.Extensions;
 using ExpensoServer.Data;
 using ExpensoServer.Data.Enums;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpensoServer.Features.TransferOperations;
@@ -13,7 +14,9 @@ public static class GetById
     {
         public static void Map(IEndpointRouteBuilder app)
         {
-            app.MapGet("/{id:guid}", HandleAsync);
+            app.MapGet("/{id:guid}", HandleAsync)
+                .Produces<Response>()
+                .ProducesProblem(StatusCodes.Status404NotFound);
         }
     }
 
@@ -30,13 +33,16 @@ public static class GetById
         decimal? ExchangeRate = null
     );
 
-    private static async Task<IResult> HandleAsync(Guid id, ClaimsPrincipal claimsPrincipal,
-        ApplicationDbContext dbContext, CancellationToken cancellationToken)
+    private static async Task<IResult> HandleAsync(
+        Guid id,
+        ClaimsPrincipal claimsPrincipal,
+        ApplicationDbContext dbContext,
+        CancellationToken cancellationToken)
     {
         var userId = claimsPrincipal.GetUserId();
 
         var response = await dbContext.Operations
-            .Where(x => x.UserId == userId && x.Type == OperationType.Transfer)
+            .Where(x => x.UserId == userId && x.Type == OperationType.Transfer && x.Id == id)
             .Select(x => new Response(
                 x.Id,
                 x.FromAccountId!.Value,
@@ -46,12 +52,16 @@ public static class GetById
                 x.Timestamp,
                 x.Note,
                 x.ConvertedAmount,
-                x.ConvertedCurrency!.Value.ToString(),
-                x.ExchangeRate!.Value))
-            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+                x.ConvertedCurrency.HasValue ? x.ConvertedCurrency.Value.ToString() : null,
+                x.ExchangeRate))
+            .FirstOrDefaultAsync(cancellationToken);
 
-        return response is null
-            ? TypedResults.NotFound()
-            : TypedResults.Ok(response);
+        if (response is null)
+            return TypedResults.Problem(
+                title: "Transfer Operation Not Found",
+                detail: $"Transfer operation with ID '{id}' was not found for the current user.",
+                statusCode: StatusCodes.Status404NotFound);
+
+        return TypedResults.Ok(response);
     }
 }

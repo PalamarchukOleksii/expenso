@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using System.Text.Json;
 using ExpensoServer.Common.Endpoints;
 using ExpensoServer.Common.Endpoints.Constants;
 using ExpensoServer.Common.Endpoints.Extensions;
@@ -8,6 +7,8 @@ using ExpensoServer.Data;
 using ExpensoServer.Data.Entities;
 using ExpensoServer.Data.Enums;
 using FluentValidation;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpensoServer.Features.TransferOperations;
@@ -19,7 +20,10 @@ public static class Create
         public static void Map(IEndpointRouteBuilder app)
         {
             app.MapPost("/create", HandleAsync)
-                .AddEndpointFilter<RequestValidationFilter<Request>>();
+                .WithRequestValidation<Request>()
+                .Produces<Response>(StatusCodes.Status201Created)
+                .ProducesProblem(StatusCodes.Status400BadRequest)
+                .ProducesProblem(StatusCodes.Status404NotFound);
         }
     }
 
@@ -64,10 +68,10 @@ public static class Create
         }
     }
 
-    private static async Task<IResult> HandleAsync(
+    private static async Task<Results<Created<Response>, ProblemHttpResult>> HandleAsync(
         Request request,
-        ApplicationDbContext dbContext,
         ClaimsPrincipal claimsPrincipal,
+        ApplicationDbContext dbContext,
         HttpContext httpContext,
         CancellationToken cancellationToken)
     {
@@ -78,23 +82,30 @@ public static class Create
             x.Id == request.FromAccountId, cancellationToken);
 
         if (fromAccount is null)
-            return TypedResults.NotFound();
+            return TypedResults.Problem(
+                title: "FromAccount Not Found",
+                detail: $"Account with ID '{request.FromAccountId}' was not found for the current user.",
+                statusCode: StatusCodes.Status404NotFound);
 
         var toAccount = await dbContext.Accounts.FirstOrDefaultAsync(x =>
             x.UserId == userId &&
             x.Id == request.ToAccountId, cancellationToken);
 
         if (toAccount is null)
-            return TypedResults.NotFound();
+            return TypedResults.Problem(
+                title: "ToAccount Not Found",
+                detail: $"Account with ID '{request.ToAccountId}' was not found for the current user.",
+                statusCode: StatusCodes.Status404NotFound);
+
+        if (fromAccount.Currency != toAccount.Currency && !request.ExchangeRate.HasValue)
+            return TypedResults.Problem(
+                title: "Missing Exchange Rate",
+                detail: "ExchangeRate must be provided when transferring between accounts with different currencies.",
+                statusCode: StatusCodes.Status400BadRequest);
 
         var convertedAmount = request.Amount;
 
-        if (fromAccount.Currency != toAccount.Currency)
-        {
-            if (!request.ExchangeRate.HasValue) return TypedResults.BadRequest();
-
-            convertedAmount *= request.ExchangeRate.Value;
-        }
+        if (fromAccount.Currency != toAccount.Currency) convertedAmount *= request.ExchangeRate!.Value;
 
         fromAccount.Balance -= request.Amount;
         toAccount.Balance += convertedAmount;

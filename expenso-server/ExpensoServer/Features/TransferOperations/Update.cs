@@ -5,6 +5,8 @@ using ExpensoServer.Common.Endpoints.Filters;
 using ExpensoServer.Data;
 using ExpensoServer.Data.Enums;
 using FluentValidation;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpensoServer.Features.TransferOperations;
@@ -16,7 +18,10 @@ public static class Update
         public static void Map(IEndpointRouteBuilder app)
         {
             app.MapPatch("/{id:guid}", HandleAsync)
-                .AddEndpointFilter<RequestValidationFilter<Request>>();
+                .WithRequestValidation<Request>()
+                .Produces<Response>()
+                .ProducesProblem(StatusCodes.Status400BadRequest)
+                .ProducesProblem(StatusCodes.Status404NotFound);
         }
     }
 
@@ -67,12 +72,11 @@ public static class Update
         }
     }
 
-    private static async Task<IResult> HandleAsync(
+    private static async Task<Results<Ok<Response>, ProblemHttpResult>> HandleAsync(
         Guid id,
         Request request,
         ClaimsPrincipal claimsPrincipal,
         ApplicationDbContext dbContext,
-        HttpContext httpContext,
         CancellationToken cancellationToken)
     {
         var userId = claimsPrincipal.GetUserId();
@@ -86,14 +90,17 @@ public static class Update
                 x.Type == OperationType.Transfer, cancellationToken);
 
         if (operation is null)
-            return TypedResults.NotFound();
+            return TypedResults.Problem(
+                title: "Transfer Operation Not Found",
+                detail: $"Transfer operation with ID '{id}' was not found for the current user.",
+                statusCode: StatusCodes.Status404NotFound);
 
         var oldFromAccount = operation.FromAccount!;
         var oldToAccount = operation.ToAccount!;
         var oldAmount = operation.Amount;
         var oldConvertedAmount = operation.ConvertedAmount ?? operation.Amount;
         var newAmount = request.Amount ?? oldAmount;
-
+        
         if ((request.FromAccountId.HasValue && request.FromAccountId != operation.FromAccountId) ||
             (request.ToAccountId.HasValue && request.ToAccountId != operation.ToAccountId))
         {
@@ -105,13 +112,22 @@ public static class Update
                     a => a.Id == (request.FromAccountId ?? operation.FromAccountId) && a.UserId == userId,
                     cancellationToken);
             if (newFromAccount is null)
-                return TypedResults.NotFound();
+                return TypedResults.Problem(
+                    title: "From Account Not Found",
+                    detail:
+                    $"Account with ID '{request.FromAccountId ?? operation.FromAccountId}' was not found for the current user.",
+                    statusCode: StatusCodes.Status404NotFound);
 
             var newToAccount = await dbContext.Accounts
-                .FirstOrDefaultAsync(a => a.Id == (request.ToAccountId ?? operation.ToAccountId) && a.UserId == userId,
+                .FirstOrDefaultAsync(
+                    a => a.Id == (request.ToAccountId ?? operation.ToAccountId) && a.UserId == userId,
                     cancellationToken);
             if (newToAccount is null)
-                return TypedResults.NotFound();
+                return TypedResults.Problem(
+                    title: "To Account Not Found",
+                    detail:
+                    $"Account with ID '{request.ToAccountId ?? operation.ToAccountId}' was not found for the current user.",
+                    statusCode: StatusCodes.Status404NotFound);
 
             var requiresConversion = newFromAccount.Currency != newToAccount.Currency;
             var convertedAmount = newAmount;
@@ -119,7 +135,12 @@ public static class Update
             if (requiresConversion)
             {
                 if (!request.ExchangeRate.HasValue)
-                    return TypedResults.BadRequest();
+                    return TypedResults.Problem(
+                        title: "Missing Exchange Rate",
+                        detail:
+                        "ExchangeRate must be provided when transferring between accounts with different currencies.",
+                        statusCode: StatusCodes.Status400BadRequest);
+
                 convertedAmount *= request.ExchangeRate.Value;
             }
 
@@ -144,10 +165,15 @@ public static class Update
             if (requiresConversion)
             {
                 if (!request.ExchangeRate.HasValue)
-                    return TypedResults.BadRequest();
+                    return TypedResults.Problem(
+                        title: "Missing Exchange Rate",
+                        detail:
+                        "ExchangeRate must be provided when transferring between accounts with different currencies.",
+                        statusCode: StatusCodes.Status400BadRequest);
+
                 convertedAmount = newAmount * request.ExchangeRate.Value;
             }
-
+            
             oldFromAccount.Balance += oldAmount;
             oldFromAccount.Balance -= newAmount;
 
@@ -159,7 +185,8 @@ public static class Update
             operation.ExchangeRate = requiresConversion ? request.ExchangeRate : null;
         }
 
-        if (request.Note is not null && request.Note != operation.Note) operation.Note = request.Note;
+        if (request.Note is not null && request.Note != operation.Note)
+            operation.Note = request.Note;
 
         await dbContext.SaveChangesAsync(cancellationToken);
 

@@ -3,6 +3,8 @@ using ExpensoServer.Common.Endpoints;
 using ExpensoServer.Common.Endpoints.Extensions;
 using ExpensoServer.Data;
 using ExpensoServer.Data.Enums;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpensoServer.Features.TransferOperations;
@@ -13,7 +15,8 @@ public static class GetAll
     {
         public static void Map(IEndpointRouteBuilder app)
         {
-            app.MapGet("/", HandleAsync);
+            app.MapGet("/", HandleAsync)
+                .Produces<Response[]>();
         }
     }
 
@@ -30,8 +33,10 @@ public static class GetAll
         decimal? ExchangeRate = null
     );
 
-    private static async Task<IResult> HandleAsync(ClaimsPrincipal claimsPrincipal,
-        ApplicationDbContext dbContext, CancellationToken cancellationToken)
+    private static async Task<Ok<Response[]>> HandleAsync(
+        ClaimsPrincipal claimsPrincipal,
+        ApplicationDbContext dbContext,
+        CancellationToken cancellationToken)
     {
         var userId = claimsPrincipal.GetUserId();
 
@@ -46,9 +51,9 @@ public static class GetAll
                 x.Timestamp,
                 x.Note,
                 x.ConvertedAmount,
-                x.ConvertedCurrency!.Value.ToString(),
-                x.ExchangeRate!.Value))
-            .ToListAsync(cancellationToken);
+                x.ConvertedCurrency.HasValue ? x.ConvertedCurrency.Value.ToString() : null,
+                x.ExchangeRate))
+            .ToArrayAsync(cancellationToken);
 
         return TypedResults.Ok(operations);
     }
