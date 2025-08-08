@@ -3,6 +3,7 @@ using ExpensoServer.Common.Endpoints.Constants;
 using ExpensoServer.Features;
 using ExpensoServer.Features.Auth;
 using ExpensoServer.Features.ExpenseOperations;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ExpensoServer;
 
@@ -143,7 +144,8 @@ public static class Endpoints
     private static RouteGroupBuilder MapAuthorizedGroup(this IEndpointRouteBuilder app, string? prefix = null)
     {
         return app.MapGroup(prefix ?? string.Empty)
-            .RequireAuthorization();
+            .RequireAuthorization()
+            .WithMetadata(new ProducesResponseTypeAttribute(StatusCodes.Status401Unauthorized));
     }
 
     private static IEndpointRouteBuilder MapEndpoint<TEndpoint>(this IEndpointRouteBuilder app)
