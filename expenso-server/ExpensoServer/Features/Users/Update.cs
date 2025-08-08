@@ -3,8 +3,9 @@ using ExpensoServer.Common.Endpoints;
 using ExpensoServer.Common.Endpoints.Extensions;
 using ExpensoServer.Common.Endpoints.Filters;
 using ExpensoServer.Data;
-using ExpensoServer.Data.Enums;
 using FluentValidation;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpensoServer.Features.Users;
@@ -16,7 +17,10 @@ public static class Update
         public static void Map(IEndpointRouteBuilder app)
         {
             app.MapPatch("/current", HandleAsync)
-                .AddEndpointFilter<RequestValidationFilter<Request>>();
+                .WithRequestValidation<Request>()
+                .Produces<Response>()
+                .ProducesProblem(StatusCodes.Status404NotFound)
+                .ProducesProblem(StatusCodes.Status409Conflict);
         }
     }
 
@@ -34,7 +38,7 @@ public static class Update
         }
     }
 
-    private static async Task<IResult> HandleAsync(
+    private static async Task<Results<Ok<Response>, ProblemHttpResult>> HandleAsync(
         Request request,
         ApplicationDbContext dbContext,
         ClaimsPrincipal claimsPrincipal,
@@ -47,21 +51,27 @@ public static class Update
             .FirstOrDefaultAsync(cancellationToken);
 
         if (user is null)
-            return Results.NotFound();
+            return TypedResults.Problem(
+                title: "User Not Found",
+                detail: $"User with ID '{userId}' was not found.",
+                statusCode: StatusCodes.Status404NotFound);
 
         if (user.Email == request.Email)
-            return Results.Ok(new Response(user.Id, user.Email));
+            return TypedResults.Ok(new Response(user.Id, user.Email));
 
         var isEmailConflict = await dbContext.Users.AnyAsync(u =>
             u.Email == request.Email &&
             u.Id != userId, cancellationToken);
 
         if (isEmailConflict)
-            return Results.Conflict();
+            return TypedResults.Problem(
+                title: "Email Conflict",
+                detail: $"The email '{request.Email}' is already taken by another user.",
+                statusCode: StatusCodes.Status409Conflict);
 
         user.Email = request.Email;
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return Results.Ok(new Response(user.Id, user.Email));
+        return TypedResults.Ok(new Response(user.Id, user.Email));
     }
 }

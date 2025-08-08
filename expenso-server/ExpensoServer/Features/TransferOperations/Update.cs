@@ -100,7 +100,7 @@ public static class Update
         var oldAmount = operation.Amount;
         var oldConvertedAmount = operation.ConvertedAmount ?? operation.Amount;
         var newAmount = request.Amount ?? oldAmount;
-        
+
         if ((request.FromAccountId.HasValue && request.FromAccountId != operation.FromAccountId) ||
             (request.ToAccountId.HasValue && request.ToAccountId != operation.ToAccountId))
         {
@@ -173,7 +173,7 @@ public static class Update
 
                 convertedAmount = newAmount * request.ExchangeRate.Value;
             }
-            
+
             oldFromAccount.Balance += oldAmount;
             oldFromAccount.Balance -= newAmount;
 

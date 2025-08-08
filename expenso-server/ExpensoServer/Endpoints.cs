@@ -30,7 +30,7 @@ public static class Endpoints
             .WithTags(Routes.Segments.Users);
 
         endpoints.MapAuthorizedGroup()
-            .MapEndpoint<Features.Users.GetCurrent.Endpoints>()
+            .MapEndpoint<Features.Users.GetCurrent.Endpoint>()
             .MapEndpoint<Features.Users.Update.Endpoint>()
             .MapEndpoint<Features.Users.Delete.Endpoint>();
     }
