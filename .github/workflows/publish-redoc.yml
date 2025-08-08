@@ -1,0 +1,56 @@
+name: Publish ReDoc API docs to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish-redoc:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup .NET SDK 9
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Setup latest Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+
+      - name: Install redoc-cli
+        run: npm install -g redoc-cli
+
+      - name: Build the API project
+        run: dotnet build --no-restore
+
+      - name: Run the API in background
+        run: dotnet run --no-build --urls http://localhost:5000 &
+
+      - name: Wait for API to be ready
+        run: |
+          for i in {1..15}; do
+            if curl -s http://localhost:5000/swagger/v1/swagger.json -o /dev/null; then
+              echo "API is ready"
+              break
+            fi
+            echo "Waiting for API..."
+            sleep 2
+          done
+
+      - name: Download Swagger JSON
+        run: curl -s http://localhost:5000/swagger/v1/swagger.json -o openapi.json
+
+      - name: Bundle OpenAPI with ReDoc
+        run: redoc-cli bundle openapi.json --output redoc-static/index.html
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./redoc-static
