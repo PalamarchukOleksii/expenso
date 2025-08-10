@@ -5,8 +5,8 @@ on:
     branches:
       - main
     paths:
-      - './expenso-server/ExpensoServer/openapi.json'
-      - '.github/workflows/publish-redoc.yml' 
+      - 'expenso-server/ExpensoServer/openapi.json'
+      - '.github/workflows/publish-redoc.yml'
 
 permissions:
   contents: read
@@ -35,6 +35,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: .
+          artifact-name: github-pages-artifact
 
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
