@@ -1,68 +1,39 @@
-name: Publish ReDoc API docs to GitHub Pages
+name: Publish ReDoc to GitHub Pages
 
 on:
   push:
     branches:
       - main
     paths:
-      - '.github/workflows/publish-redoc.yml'
-      - 'expenso-server/**'
-  pull_request:
-    branches:
-      - main
-    paths:
-      - '.github/workflows/publish-redoc.yml'
-      - 'expenso-server/**'
+      - './expenso-server/ExpensoServer/openapi.json'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
-  publish-redoc:
+  deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Setup .NET SDK 9
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '9.0.x'
-
-      - name: Setup latest Node.js
-        uses: actions/setup-node@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: '22'
 
-      - name: Install redoc-cli
-        run: npm install -g redoc-cli
+      - name: Install ReDoc CLI
+        run: npm install -g @redocly/cli
 
-      - name: Restore NuGet packages
-        run: dotnet restore ./expenso-server/ExpensoServer/ExpensoServer.csproj
+      - name: Generate ReDoc HTML
+        run: redocly build-docs ./expenso-server/ExpensoServer/openapi.json -o index.html
 
-      - name: Build the API project
-        run: dotnet build ./expenso-server/ExpensoServer/ExpensoServer.csproj --no-restore
-
-      - name: Run the API in background
-        run: dotnet run --project ./expenso-server/ExpensoServer/ExpensoServer.csproj --no-build --urls http://localhost:5000 &
-
-      - name: Wait for API to be ready
-        run: |
-          for i in {1..15}; do
-            if curl -s http://localhost:5000/swagger/v1/swagger.json -o /dev/null; then
-              echo "API is ready"
-              break
-            fi
-            echo "Waiting for API..."
-            sleep 2
-          done
-
-      - name: Download Swagger JSON
-        run: curl -s http://localhost:5000/swagger/v1/swagger.json -o openapi.json
-
-      - name: Bundle OpenAPI with ReDoc
-        run: redoc-cli bundle openapi.json --output redoc-static/index.html
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./redoc-static
+        uses: actions/deploy-pages@v4
