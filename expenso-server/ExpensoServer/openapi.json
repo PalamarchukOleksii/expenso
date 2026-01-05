@@ -1,5 +1,5 @@
 {
-  "openapi": "3.0.1",
+  "openapi": "3.1.1",
   "info": {
     "title": "ExpensoServer | v1",
     "version": "1.0.0"
@@ -16,7 +16,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExpensoServer.Features.Users.GetCurrent.Response"
+                  "$ref": "#/components/schemas/Response"
                 }
               }
             }
@@ -26,7 +26,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -44,7 +44,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ExpensoServer.Features.Users.Update.Request"
+                "$ref": "#/components/schemas/Request"
               }
             }
           },
@@ -56,7 +56,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExpensoServer.Features.Users.Update.Response"
+                  "$ref": "#/components/schemas/Response"
                 }
               }
             }
@@ -66,7 +66,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Http.HttpValidationProblemDetails"
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
                 }
               }
             }
@@ -76,7 +76,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -86,7 +86,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -109,7 +109,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -129,7 +129,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ExpensoServer.Features.Auth.Register.Request"
+                "$ref": "#/components/schemas/Request"
               }
             }
           },
@@ -141,7 +141,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExpensoServer.Features.Auth.Register.Response"
+                  "$ref": "#/components/schemas/Response"
                 }
               }
             }
@@ -151,7 +151,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -168,7 +168,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ExpensoServer.Features.Auth.Login.Request"
+                "$ref": "#/components/schemas/Request"
               }
             }
           },
@@ -180,7 +180,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExpensoServer.Features.Auth.Login.Response"
+                  "$ref": "#/components/schemas/Response"
                 }
               }
             }
@@ -190,7 +190,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Http.HttpValidationProblemDetails"
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
                 }
               }
             }
@@ -200,7 +200,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -232,7 +232,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ExpensoServer.Features.Accounts.Create.Request"
+                "$ref": "#/components/schemas/Request"
               }
             }
           },
@@ -244,7 +244,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExpensoServer.Features.Accounts.Create.Response"
+                  "$ref": "#/components/schemas/Response"
                 }
               }
             }
@@ -254,7 +254,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -264,7 +264,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -295,7 +295,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ExpensoServer.Features.Accounts.Update.Request"
+                "$ref": "#/components/schemas/Request"
               }
             }
           },
@@ -307,7 +307,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExpensoServer.Features.Accounts.Update.Response"
+                  "$ref": "#/components/schemas/Response"
                 }
               }
             }
@@ -317,7 +317,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -327,7 +327,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -337,7 +337,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -371,7 +371,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -402,7 +402,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExpensoServer.Features.Accounts.GetById.Response"
+                  "$ref": "#/components/schemas/Response"
                 }
               }
             }
@@ -412,7 +412,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -436,7 +436,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/ExpensoServer.Features.Accounts.GetAll.Response"
+                    "$ref": "#/components/schemas/Response"
                   }
                 }
               }
@@ -457,7 +457,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ExpensoServer.Features.IncomeCategories.Create.Request"
+                "$ref": "#/components/schemas/Request"
               }
             }
           },
@@ -469,7 +469,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExpensoServer.Features.IncomeCategories.Create.Response"
+                  "$ref": "#/components/schemas/Response"
                 }
               }
             }
@@ -479,7 +479,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Http.HttpValidationProblemDetails"
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
                 }
               }
             }
@@ -489,7 +489,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -520,7 +520,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ExpensoServer.Features.IncomeCategories.Update.Request"
+                "$ref": "#/components/schemas/Request"
               }
             }
           },
@@ -532,7 +532,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExpensoServer.Features.IncomeCategories.Update.Response"
+                  "$ref": "#/components/schemas/Response"
                 }
               }
             }
@@ -542,7 +542,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Http.HttpValidationProblemDetails"
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
                 }
               }
             }
@@ -552,7 +552,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -562,7 +562,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -572,7 +572,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -606,7 +606,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -616,7 +616,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -647,7 +647,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExpensoServer.Features.IncomeCategories.GetById.Response"
+                  "$ref": "#/components/schemas/Response"
                 }
               }
             }
@@ -657,7 +657,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -681,7 +681,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/ExpensoServer.Features.IncomeCategories.GetAll.Response"
+                    "$ref": "#/components/schemas/Response"
                   }
                 }
               }
@@ -702,7 +702,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ExpensoServer.Features.ExpenseCategories.Create.Request"
+                "$ref": "#/components/schemas/Request"
               }
             }
           },
@@ -714,7 +714,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExpensoServer.Features.ExpenseCategories.Create.Response"
+                  "$ref": "#/components/schemas/Response"
                 }
               }
             }
@@ -724,7 +724,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Http.HttpValidationProblemDetails"
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
                 }
               }
             }
@@ -734,7 +734,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -765,7 +765,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ExpensoServer.Features.ExpenseCategories.Update.Request"
+                "$ref": "#/components/schemas/Request"
               }
             }
           },
@@ -777,7 +777,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExpensoServer.Features.ExpenseCategories.Update.Response"
+                  "$ref": "#/components/schemas/Response"
                 }
               }
             }
@@ -787,7 +787,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Http.HttpValidationProblemDetails"
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
                 }
               }
             }
@@ -797,7 +797,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -807,7 +807,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -817,7 +817,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -851,7 +851,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -861,7 +861,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -892,7 +892,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExpensoServer.Features.ExpenseCategories.GetById.Response"
+                  "$ref": "#/components/schemas/Response"
                 }
               }
             }
@@ -902,7 +902,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -926,7 +926,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/ExpensoServer.Features.ExpenseCategories.GetAll.Response"
+                    "$ref": "#/components/schemas/Response"
                   }
                 }
               }
@@ -947,7 +947,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ExpensoServer.Features.IncomeOperations.Create.Request"
+                "$ref": "#/components/schemas/Request"
               }
             }
           },
@@ -959,7 +959,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExpensoServer.Features.IncomeOperations.Create.Response"
+                  "$ref": "#/components/schemas/Response"
                 }
               }
             }
@@ -969,7 +969,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Http.HttpValidationProblemDetails"
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
                 }
               }
             }
@@ -979,7 +979,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -1010,7 +1010,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ExpensoServer.Features.IncomeOperations.Update.Request"
+                "$ref": "#/components/schemas/Request"
               }
             }
           },
@@ -1022,7 +1022,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExpensoServer.Features.IncomeOperations.Update.Response"
+                  "$ref": "#/components/schemas/Response"
                 }
               }
             }
@@ -1032,7 +1032,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Http.HttpValidationProblemDetails"
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
                 }
               }
             }
@@ -1042,7 +1042,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -1076,7 +1076,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -1107,7 +1107,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExpensoServer.Features.IncomeOperations.GetById.Response"
+                  "$ref": "#/components/schemas/Response"
                 }
               }
             }
@@ -1117,7 +1117,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -1141,7 +1141,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/ExpensoServer.Features.IncomeOperations.GetAll.Response"
+                    "$ref": "#/components/schemas/Response"
                   }
                 }
               }
@@ -1162,7 +1162,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ExpensoServer.Features.ExpenseOperations.Create.Request"
+                "$ref": "#/components/schemas/Request"
               }
             }
           },
@@ -1174,7 +1174,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExpensoServer.Features.ExpenseOperations.Create.Response"
+                  "$ref": "#/components/schemas/Response"
                 }
               }
             }
@@ -1184,7 +1184,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Http.HttpValidationProblemDetails"
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
                 }
               }
             }
@@ -1194,7 +1194,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -1225,7 +1225,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ExpensoServer.Features.ExpenseOperations.Update.Request"
+                "$ref": "#/components/schemas/Request"
               }
             }
           },
@@ -1237,7 +1237,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExpensoServer.Features.ExpenseOperations.Update.Response"
+                  "$ref": "#/components/schemas/Response"
                 }
               }
             }
@@ -1247,7 +1247,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Http.HttpValidationProblemDetails"
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
                 }
               }
             }
@@ -1257,7 +1257,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -1291,7 +1291,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -1322,7 +1322,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExpensoServer.Features.ExpenseOperations.GetById.Response"
+                  "$ref": "#/components/schemas/Response"
                 }
               }
             }
@@ -1332,7 +1332,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -1356,7 +1356,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/ExpensoServer.Features.ExpenseOperations.GetAll.Response"
+                    "$ref": "#/components/schemas/Response"
                   }
                 }
               }
@@ -1377,7 +1377,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ExpensoServer.Features.TransferOperations.Create.Request"
+                "$ref": "#/components/schemas/Request"
               }
             }
           },
@@ -1389,7 +1389,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExpensoServer.Features.TransferOperations.Create.Response"
+                  "$ref": "#/components/schemas/Response"
                 }
               }
             }
@@ -1399,7 +1399,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -1409,7 +1409,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -1440,7 +1440,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ExpensoServer.Features.TransferOperations.Update.Request"
+                "$ref": "#/components/schemas/Request"
               }
             }
           },
@@ -1452,7 +1452,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExpensoServer.Features.TransferOperations.Update.Response"
+                  "$ref": "#/components/schemas/Response"
                 }
               }
             }
@@ -1462,7 +1462,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -1472,7 +1472,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -1506,7 +1506,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -1537,7 +1537,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExpensoServer.Features.TransferOperations.GetById.Response"
+                  "$ref": "#/components/schemas/Response"
                 }
               }
             }
@@ -1547,7 +1547,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -1571,7 +1571,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/ExpensoServer.Features.TransferOperations.GetAll.Response"
+                    "$ref": "#/components/schemas/Response"
                   }
                 }
               }
@@ -1612,7 +1612,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExpensoServer.Features.ExchangeRates.Get.Response"
+                  "$ref": "#/components/schemas/Response"
                 }
               }
             }
@@ -1622,7 +1622,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -1632,7 +1632,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -1646,223 +1646,142 @@
   },
   "components": {
     "schemas": {
-      "ExpensoServer.Features.Accounts.Create.Request": {
-        "title": "ExpensoServer.Features.Accounts.Create.Request",
+      "HttpValidationProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "status": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "detail": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "instance": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "status": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "detail": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "instance": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "Request": {
         "required": [
-          "name",
-          "balance",
-          "currency"
+          "fromAccountId",
+          "toAccountId",
+          "amount",
+          "note",
+          "exchangeRate"
         ],
         "type": "object",
         "properties": {
-          "name": {
-            "type": "string"
+          "fromAccountId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
           },
-          "balance": {
-            "type": "number",
+          "toAccountId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "amount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
             "format": "double"
           },
-          "currency": {
-            "type": "string"
-          }
-        }
-      },
-      "ExpensoServer.Features.Accounts.Create.Response": {
-        "title": "ExpensoServer.Features.Accounts.Create.Response",
-        "required": [
-          "id",
-          "name",
-          "balance",
-          "currency"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
+          "note": {
+            "type": [
+              "null",
+              "string"
+            ]
           },
-          "name": {
-            "type": "string"
-          },
-          "balance": {
-            "type": "number",
+          "exchangeRate": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
             "format": "double"
-          },
-          "currency": {
-            "type": "string"
           }
         }
       },
-      "ExpensoServer.Features.Accounts.GetAll.Response": {
-        "title": "ExpensoServer.Features.Accounts.GetAll.Response",
-        "required": [
-          "id",
-          "name",
-          "balance",
-          "currency"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "balance": {
-            "type": "number",
-            "format": "double"
-          },
-          "currency": {
-            "type": "string"
-          }
-        }
-      },
-      "ExpensoServer.Features.Accounts.GetById.Response": {
-        "title": "ExpensoServer.Features.Accounts.GetById.Response",
-        "required": [
-          "id",
-          "name",
-          "balance",
-          "currency"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "balance": {
-            "type": "number",
-            "format": "double"
-          },
-          "currency": {
-            "type": "string"
-          }
-        }
-      },
-      "ExpensoServer.Features.Accounts.Update.Request": {
-        "title": "ExpensoServer.Features.Accounts.Update.Request",
-        "required": [
-          "name",
-          "balance",
-          "currency"
-        ],
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "nullable": true
-          },
-          "balance": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "currency": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "ExpensoServer.Features.Accounts.Update.Response": {
-        "title": "ExpensoServer.Features.Accounts.Update.Response",
-        "required": [
-          "id",
-          "name",
-          "balance",
-          "currency"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "balance": {
-            "type": "number",
-            "format": "double"
-          },
-          "currency": {
-            "type": "string"
-          }
-        }
-      },
-      "ExpensoServer.Features.Auth.Login.Request": {
-        "title": "ExpensoServer.Features.Auth.Login.Request",
-        "required": [
-          "email",
-          "password"
-        ],
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string"
-          },
-          "password": {
-            "type": "string"
-          }
-        }
-      },
-      "ExpensoServer.Features.Auth.Login.Response": {
-        "title": "ExpensoServer.Features.Auth.Login.Response",
-        "required": [
-          "id",
-          "email"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "email": {
-            "type": "string"
-          }
-        }
-      },
-      "ExpensoServer.Features.Auth.Register.Request": {
-        "title": "ExpensoServer.Features.Auth.Register.Request",
-        "required": [
-          "email",
-          "password"
-        ],
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string"
-          },
-          "password": {
-            "type": "string"
-          }
-        }
-      },
-      "ExpensoServer.Features.Auth.Register.Response": {
-        "title": "ExpensoServer.Features.Auth.Register.Response",
-        "required": [
-          "id",
-          "email"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "email": {
-            "type": "string"
-          }
-        }
-      },
-      "ExpensoServer.Features.ExchangeRates.Get.Response": {
-        "title": "ExpensoServer.Features.ExchangeRates.Get.Response",
+      "Response": {
         "required": [
           "fromCurrency",
           "toCurrency",
@@ -1877,1062 +1796,12 @@
             "type": "string"
           },
           "rate": {
-            "type": "number",
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
             "format": "double"
-          }
-        }
-      },
-      "ExpensoServer.Features.ExpenseCategories.Create.Request": {
-        "title": "ExpensoServer.Features.ExpenseCategories.Create.Request",
-        "required": [
-          "name"
-        ],
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          }
-        }
-      },
-      "ExpensoServer.Features.ExpenseCategories.Create.Response": {
-        "title": "ExpensoServer.Features.ExpenseCategories.Create.Response",
-        "required": [
-          "id",
-          "name"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          }
-        }
-      },
-      "ExpensoServer.Features.ExpenseCategories.GetAll.Response": {
-        "title": "ExpensoServer.Features.ExpenseCategories.GetAll.Response",
-        "required": [
-          "id",
-          "name"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          }
-        }
-      },
-      "ExpensoServer.Features.ExpenseCategories.GetById.Response": {
-        "title": "ExpensoServer.Features.ExpenseCategories.GetById.Response",
-        "required": [
-          "id",
-          "name"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          }
-        }
-      },
-      "ExpensoServer.Features.ExpenseCategories.Update.Request": {
-        "title": "ExpensoServer.Features.ExpenseCategories.Update.Request",
-        "required": [
-          "name"
-        ],
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          }
-        }
-      },
-      "ExpensoServer.Features.ExpenseCategories.Update.Response": {
-        "title": "ExpensoServer.Features.ExpenseCategories.Update.Response",
-        "required": [
-          "id",
-          "name"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          }
-        }
-      },
-      "ExpensoServer.Features.ExpenseOperations.Create.Request": {
-        "title": "ExpensoServer.Features.ExpenseOperations.Create.Request",
-        "required": [
-          "accountId",
-          "categoryId",
-          "amount",
-          "note"
-        ],
-        "type": "object",
-        "properties": {
-          "accountId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "categoryId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "amount": {
-            "type": "number",
-            "format": "double"
-          },
-          "note": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "ExpensoServer.Features.ExpenseOperations.Create.Response": {
-        "title": "ExpensoServer.Features.ExpenseOperations.Create.Response",
-        "required": [
-          "id",
-          "accountId",
-          "categoryId",
-          "amount",
-          "currency",
-          "timestamp",
-          "note"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "accountId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "categoryId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "amount": {
-            "type": "number",
-            "format": "double"
-          },
-          "currency": {
-            "type": "string"
-          },
-          "timestamp": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "note": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "ExpensoServer.Features.ExpenseOperations.GetAll.Response": {
-        "title": "ExpensoServer.Features.ExpenseOperations.GetAll.Response",
-        "required": [
-          "id",
-          "accountId",
-          "categoryId",
-          "amount",
-          "currency",
-          "timestamp",
-          "note"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "accountId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "categoryId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "amount": {
-            "type": "number",
-            "format": "double"
-          },
-          "currency": {
-            "type": "string"
-          },
-          "timestamp": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "note": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "ExpensoServer.Features.ExpenseOperations.GetById.Response": {
-        "title": "ExpensoServer.Features.ExpenseOperations.GetById.Response",
-        "required": [
-          "id",
-          "accountId",
-          "categoryId",
-          "amount",
-          "currency",
-          "timestamp",
-          "note"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "accountId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "categoryId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "amount": {
-            "type": "number",
-            "format": "double"
-          },
-          "currency": {
-            "type": "string"
-          },
-          "timestamp": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "note": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "ExpensoServer.Features.ExpenseOperations.Update.Request": {
-        "title": "ExpensoServer.Features.ExpenseOperations.Update.Request",
-        "required": [
-          "accountId",
-          "categoryId",
-          "amount",
-          "note"
-        ],
-        "type": "object",
-        "properties": {
-          "accountId": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
-          },
-          "categoryId": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
-          },
-          "amount": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "note": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "ExpensoServer.Features.ExpenseOperations.Update.Response": {
-        "title": "ExpensoServer.Features.ExpenseOperations.Update.Response",
-        "required": [
-          "id",
-          "accountId",
-          "categoryId",
-          "amount",
-          "currency",
-          "timestamp",
-          "note"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "accountId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "categoryId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "amount": {
-            "type": "number",
-            "format": "double"
-          },
-          "currency": {
-            "type": "string"
-          },
-          "timestamp": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "note": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "ExpensoServer.Features.IncomeCategories.Create.Request": {
-        "title": "ExpensoServer.Features.IncomeCategories.Create.Request",
-        "required": [
-          "name"
-        ],
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          }
-        }
-      },
-      "ExpensoServer.Features.IncomeCategories.Create.Response": {
-        "title": "ExpensoServer.Features.IncomeCategories.Create.Response",
-        "required": [
-          "id",
-          "name"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          }
-        }
-      },
-      "ExpensoServer.Features.IncomeCategories.GetAll.Response": {
-        "title": "ExpensoServer.Features.IncomeCategories.GetAll.Response",
-        "required": [
-          "id",
-          "name"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          }
-        }
-      },
-      "ExpensoServer.Features.IncomeCategories.GetById.Response": {
-        "title": "ExpensoServer.Features.IncomeCategories.GetById.Response",
-        "required": [
-          "id",
-          "name"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          }
-        }
-      },
-      "ExpensoServer.Features.IncomeCategories.Update.Request": {
-        "title": "ExpensoServer.Features.IncomeCategories.Update.Request",
-        "required": [
-          "name"
-        ],
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          }
-        }
-      },
-      "ExpensoServer.Features.IncomeCategories.Update.Response": {
-        "title": "ExpensoServer.Features.IncomeCategories.Update.Response",
-        "required": [
-          "id",
-          "name"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          }
-        }
-      },
-      "ExpensoServer.Features.IncomeOperations.Create.Request": {
-        "title": "ExpensoServer.Features.IncomeOperations.Create.Request",
-        "required": [
-          "accountId",
-          "categoryId",
-          "amount",
-          "note"
-        ],
-        "type": "object",
-        "properties": {
-          "accountId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "categoryId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "amount": {
-            "type": "number",
-            "format": "double"
-          },
-          "note": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "ExpensoServer.Features.IncomeOperations.Create.Response": {
-        "title": "ExpensoServer.Features.IncomeOperations.Create.Response",
-        "required": [
-          "id",
-          "accountId",
-          "categoryId",
-          "amount",
-          "currency",
-          "timestamp",
-          "note"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "accountId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "categoryId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "amount": {
-            "type": "number",
-            "format": "double"
-          },
-          "currency": {
-            "type": "string"
-          },
-          "timestamp": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "note": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "ExpensoServer.Features.IncomeOperations.GetAll.Response": {
-        "title": "ExpensoServer.Features.IncomeOperations.GetAll.Response",
-        "required": [
-          "id",
-          "accountId",
-          "categoryId",
-          "amount",
-          "currency",
-          "timestamp",
-          "note"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "accountId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "categoryId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "amount": {
-            "type": "number",
-            "format": "double"
-          },
-          "currency": {
-            "type": "string"
-          },
-          "timestamp": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "note": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "ExpensoServer.Features.IncomeOperations.GetById.Response": {
-        "title": "ExpensoServer.Features.IncomeOperations.GetById.Response",
-        "required": [
-          "id",
-          "accountId",
-          "categoryId",
-          "amount",
-          "currency",
-          "timestamp",
-          "note"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "accountId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "categoryId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "amount": {
-            "type": "number",
-            "format": "double"
-          },
-          "currency": {
-            "type": "string"
-          },
-          "timestamp": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "note": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "ExpensoServer.Features.IncomeOperations.Update.Request": {
-        "title": "ExpensoServer.Features.IncomeOperations.Update.Request",
-        "required": [
-          "accountId",
-          "categoryId",
-          "amount",
-          "note"
-        ],
-        "type": "object",
-        "properties": {
-          "accountId": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
-          },
-          "categoryId": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
-          },
-          "amount": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "note": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "ExpensoServer.Features.IncomeOperations.Update.Response": {
-        "title": "ExpensoServer.Features.IncomeOperations.Update.Response",
-        "required": [
-          "id",
-          "accountId",
-          "categoryId",
-          "amount",
-          "currency",
-          "timestamp",
-          "note"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "accountId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "categoryId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "amount": {
-            "type": "number",
-            "format": "double"
-          },
-          "currency": {
-            "type": "string"
-          },
-          "timestamp": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "note": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "ExpensoServer.Features.TransferOperations.Create.Request": {
-        "title": "ExpensoServer.Features.TransferOperations.Create.Request",
-        "required": [
-          "fromAccountId",
-          "toAccountId",
-          "amount",
-          "note",
-          "exchangeRate"
-        ],
-        "type": "object",
-        "properties": {
-          "fromAccountId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "toAccountId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "amount": {
-            "type": "number",
-            "format": "double"
-          },
-          "note": {
-            "type": "string",
-            "nullable": true
-          },
-          "exchangeRate": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          }
-        }
-      },
-      "ExpensoServer.Features.TransferOperations.Create.Response": {
-        "title": "ExpensoServer.Features.TransferOperations.Create.Response",
-        "required": [
-          "id",
-          "fromAccountId",
-          "toAccountId",
-          "amount",
-          "currency",
-          "timestamp",
-          "note"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "fromAccountId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "toAccountId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "amount": {
-            "type": "number",
-            "format": "double"
-          },
-          "currency": {
-            "type": "string"
-          },
-          "timestamp": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "note": {
-            "type": "string",
-            "nullable": true
-          },
-          "convertedAmount": {
-            "type": "number",
-            "format": "double",
-            "default": null,
-            "nullable": true
-          },
-          "convertedCurrency": {
-            "type": "string",
-            "default": null,
-            "nullable": true
-          },
-          "exchangeRate": {
-            "type": "number",
-            "format": "double",
-            "default": null,
-            "nullable": true
-          }
-        }
-      },
-      "ExpensoServer.Features.TransferOperations.GetAll.Response": {
-        "title": "ExpensoServer.Features.TransferOperations.GetAll.Response",
-        "required": [
-          "id",
-          "fromAccountId",
-          "toAccountId",
-          "amount",
-          "currency",
-          "timestamp",
-          "note"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "fromAccountId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "toAccountId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "amount": {
-            "type": "number",
-            "format": "double"
-          },
-          "currency": {
-            "type": "string"
-          },
-          "timestamp": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "note": {
-            "type": "string",
-            "nullable": true
-          },
-          "convertedAmount": {
-            "type": "number",
-            "format": "double",
-            "default": null,
-            "nullable": true
-          },
-          "convertedCurrency": {
-            "type": "string",
-            "default": null,
-            "nullable": true
-          },
-          "exchangeRate": {
-            "type": "number",
-            "format": "double",
-            "default": null,
-            "nullable": true
-          }
-        }
-      },
-      "ExpensoServer.Features.TransferOperations.GetById.Response": {
-        "title": "ExpensoServer.Features.TransferOperations.GetById.Response",
-        "required": [
-          "id",
-          "fromAccountId",
-          "toAccountId",
-          "amount",
-          "currency",
-          "timestamp",
-          "note"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "fromAccountId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "toAccountId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "amount": {
-            "type": "number",
-            "format": "double"
-          },
-          "currency": {
-            "type": "string"
-          },
-          "timestamp": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "note": {
-            "type": "string",
-            "nullable": true
-          },
-          "convertedAmount": {
-            "type": "number",
-            "format": "double",
-            "default": null,
-            "nullable": true
-          },
-          "convertedCurrency": {
-            "type": "string",
-            "default": null,
-            "nullable": true
-          },
-          "exchangeRate": {
-            "type": "number",
-            "format": "double",
-            "default": null,
-            "nullable": true
-          }
-        }
-      },
-      "ExpensoServer.Features.TransferOperations.Update.Request": {
-        "title": "ExpensoServer.Features.TransferOperations.Update.Request",
-        "required": [
-          "fromAccountId",
-          "toAccountId",
-          "amount",
-          "note",
-          "exchangeRate"
-        ],
-        "type": "object",
-        "properties": {
-          "fromAccountId": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
-          },
-          "toAccountId": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
-          },
-          "amount": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "note": {
-            "type": "string",
-            "nullable": true
-          },
-          "exchangeRate": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          }
-        }
-      },
-      "ExpensoServer.Features.TransferOperations.Update.Response": {
-        "title": "ExpensoServer.Features.TransferOperations.Update.Response",
-        "required": [
-          "id",
-          "fromAccountId",
-          "toAccountId",
-          "amount",
-          "currency",
-          "timestamp",
-          "note"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "fromAccountId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "toAccountId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "amount": {
-            "type": "number",
-            "format": "double"
-          },
-          "currency": {
-            "type": "string"
-          },
-          "timestamp": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "note": {
-            "type": "string",
-            "nullable": true
-          },
-          "convertedAmount": {
-            "type": "number",
-            "format": "double",
-            "default": null,
-            "nullable": true
-          },
-          "convertedCurrency": {
-            "type": "string",
-            "default": null,
-            "nullable": true
-          },
-          "exchangeRate": {
-            "type": "number",
-            "format": "double",
-            "default": null,
-            "nullable": true
-          }
-        }
-      },
-      "ExpensoServer.Features.Users.GetCurrent.Response": {
-        "title": "ExpensoServer.Features.Users.GetCurrent.Response",
-        "required": [
-          "id",
-          "email"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "email": {
-            "type": "string"
-          }
-        }
-      },
-      "ExpensoServer.Features.Users.Update.Request": {
-        "title": "ExpensoServer.Features.Users.Update.Request",
-        "required": [
-          "email"
-        ],
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string"
-          }
-        }
-      },
-      "ExpensoServer.Features.Users.Update.Response": {
-        "title": "ExpensoServer.Features.Users.Update.Response",
-        "required": [
-          "id",
-          "email"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "email": {
-            "type": "string"
-          }
-        }
-      },
-      "Microsoft.AspNetCore.Http.HttpValidationProblemDetails": {
-        "title": "Microsoft.AspNetCore.Http.HttpValidationProblemDetails",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "nullable": true
-          },
-          "title": {
-            "type": "string",
-            "nullable": true
-          },
-          "status": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "detail": {
-            "type": "string",
-            "nullable": true
-          },
-          "instance": {
-            "type": "string",
-            "nullable": true
-          },
-          "errors": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
-          }
-        }
-      },
-      "Microsoft.AspNetCore.Mvc.ProblemDetails": {
-        "title": "Microsoft.AspNetCore.Mvc.ProblemDetails",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "nullable": true
-          },
-          "title": {
-            "type": "string",
-            "nullable": true
-          },
-          "status": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "detail": {
-            "type": "string",
-            "nullable": true
-          },
-          "instance": {
-            "type": "string",
-            "nullable": true
           }
         }
       }

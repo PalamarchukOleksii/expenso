@@ -23,10 +23,7 @@ public static class ConfigureServices
 
     private static void AddOpenApi(this WebApplicationBuilder builder)
     {
-        builder.Services.AddOpenApi(config =>
-        {
-            config.CustomSchemaIds(x => x.FullName?.Replace("+", ".", StringComparison.Ordinal));
-        });
+        builder.Services.AddOpenApi();
     }
 
     private static void AddDatabase(this WebApplicationBuilder builder)
