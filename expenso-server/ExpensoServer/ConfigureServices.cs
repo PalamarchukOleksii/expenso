@@ -15,6 +15,7 @@ public static class ConfigureServices
         builder.AddAuthentication();
         builder.AddAuthorization();
         builder.AddValidators();
+        builder.AddValidation();
         builder.AddOpenApi();
         builder.AddRequestsLogging();
         builder.AddProblemDetails();
@@ -23,7 +24,21 @@ public static class ConfigureServices
 
     private static void AddOpenApi(this WebApplicationBuilder builder)
     {
-        builder.Services.AddOpenApi();
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen(c =>
+        {
+            c.CustomSchemaIds(type =>
+            {
+                var fullName = type.FullName ?? type.Name;
+
+                return fullName.Replace("+", ".");
+            });
+        });
+    }
+
+    private static void AddValidation(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddValidation();
     }
 
     private static void AddDatabase(this WebApplicationBuilder builder)

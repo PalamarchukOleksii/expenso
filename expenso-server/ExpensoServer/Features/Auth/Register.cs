@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography;
 using System.Text;
 using ExpensoServer.Common.Abstractions;
@@ -5,7 +6,6 @@ using ExpensoServer.Common.Constants;
 using ExpensoServer.Common.Filters;
 using ExpensoServer.Data;
 using ExpensoServer.Data.Entities;
-using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,29 +20,60 @@ public static class Register
             app.MapPost("/register", HandleAsync)
                 .AddEndpointFilter<RequestValidationFilter<Request>>()
                 .Produces<Response>(StatusCodes.Status201Created)
+                .ProducesProblem(StatusCodes.Status400BadRequest)
                 .ProducesProblem(StatusCodes.Status409Conflict);
         }
     }
 
-    public record Request(string Email, string Password);
+    public record Request(
+        [EmailAddress(ErrorMessage = "Invalid email format.")]
+        [Required(ErrorMessage = "Email is required.")]
+        string Email,
+        [StringLength(256, MinimumLength = 8,ErrorMessage = "Password must be between 8 and 256 characters long.")]
+        [Required(ErrorMessage = "Password is required.")]
+        [PasswordValidation]
+        string Password);
 
     public record Response(Guid Id, string Email);
 
-    public class Validator : AbstractValidator<Request>
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter)]
+    public class PasswordValidationAttribute : ValidationAttribute
     {
-        public Validator()
+        public override bool IsValid(object? value)
         {
-            RuleFor(x => x.Email)
-                .NotEmpty().WithMessage("Email is required.")
-                .EmailAddress().WithMessage("Invalid email format.");
+            if (value is not string password)
+                return false;
 
-            RuleFor(x => x.Password)
-                .NotEmpty().WithMessage("Password is required.")
-                .MinimumLength(8).WithMessage("Password must be at least 8 characters long.")
-                .Matches("[A-Z]").WithMessage("Password must contain at least one uppercase letter.")
-                .Matches("[a-z]").WithMessage("Password must contain at least one lowercase letter.")
-                .Matches("[0-9]").WithMessage("Password must contain at least one digit.")
-                .Matches("[^a-zA-Z0-9]").WithMessage("Password must contain at least one special character.");
+            var hasUpperCase = password.Any(char.IsUpper);
+            var hasLowerCase = password.Any(char.IsLower);
+            var hasDigit = password.Any(char.IsDigit);
+            var hasSpecialChar = password.Any(c => !char.IsLetterOrDigit(c));
+
+            if (!hasUpperCase)
+            {
+                ErrorMessage = "Password must contain at least one uppercase letter.";
+                return false;
+            }
+
+            if (!hasLowerCase)
+            {
+                ErrorMessage = "Password must contain at least one lowercase letter.";
+                return false;
+            }
+
+            if (!hasDigit)
+            {
+                ErrorMessage = "Password must contain at least one digit.";
+                return false;
+            }
+
+            if (!hasSpecialChar)
+            {
+                ErrorMessage = "Password must contain at least one special character.";
+                return false;
+            }
+
+            return true;
         }
     }
 
