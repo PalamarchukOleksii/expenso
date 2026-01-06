@@ -25,57 +25,43 @@ public static class Register
         }
     }
 
-    public record Request(
+    public class Request
+    {
         [EmailAddress(ErrorMessage = "Invalid email format.")]
         [Required(ErrorMessage = "Email is required.")]
-        string Email,
-        [StringLength(256, MinimumLength = 8,ErrorMessage = "Password must be between 8 and 256 characters long.")]
+        public required string Email { get; set; }
+
+        [StringLength(256, MinimumLength = 8, ErrorMessage = "Password must be between 8 and 256 characters long.")]
         [Required(ErrorMessage = "Password is required.")]
         [PasswordValidation]
-        string Password);
+        public required string Password { get; set; }
+    }
 
-    public record Response(Guid Id, string Email);
-
-    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter)]
-    public class PasswordValidationAttribute : ValidationAttribute
+    [AttributeUsage(AttributeTargets.Property)]
+    public sealed class PasswordValidationAttribute : ValidationAttribute
     {
-        public override bool IsValid(object? value)
+        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
             if (value is not string password)
-                return false;
+                return ValidationResult.Success;
 
-            var hasUpperCase = password.Any(char.IsUpper);
-            var hasLowerCase = password.Any(char.IsLower);
-            var hasDigit = password.Any(char.IsDigit);
-            var hasSpecialChar = password.Any(c => !char.IsLetterOrDigit(c));
+            if (!password.Any(char.IsUpper))
+                return new ValidationResult("Password must contain at least one uppercase letter.");
 
-            if (!hasUpperCase)
-            {
-                ErrorMessage = "Password must contain at least one uppercase letter.";
-                return false;
-            }
+            if (!password.Any(char.IsLower))
+                return new ValidationResult("Password must contain at least one lowercase letter.");
 
-            if (!hasLowerCase)
-            {
-                ErrorMessage = "Password must contain at least one lowercase letter.";
-                return false;
-            }
+            if (!password.Any(char.IsDigit))
+                return new ValidationResult("Password must contain at least one digit.");
 
-            if (!hasDigit)
-            {
-                ErrorMessage = "Password must contain at least one digit.";
-                return false;
-            }
+            if (!password.Any(c => !char.IsLetterOrDigit(c)))
+                return new ValidationResult("Password must contain at least one special character.");
 
-            if (!hasSpecialChar)
-            {
-                ErrorMessage = "Password must contain at least one special character.";
-                return false;
-            }
-
-            return true;
+            return ValidationResult.Success;
         }
     }
+
+    public record Response(Guid Id, string Email);
 
     private static async Task<Results<Created<Response>, ProblemHttpResult>> HandleAsync(
         Request request,

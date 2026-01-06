@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -5,7 +6,6 @@ using ExpensoServer.Common.Abstractions;
 using ExpensoServer.Common.Constants;
 using ExpensoServer.Common.Extensions;
 using ExpensoServer.Data;
-using FluentValidation;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -26,22 +26,17 @@ public static class Login
         }
     }
 
-    public record Request(string Email, string Password);
+    public class Request
+    {
+        [EmailAddress(ErrorMessage = "Invalid email format.")]
+        [Required(ErrorMessage = "Email is required.")]
+        public required string Email { get; set; }
+
+        [Required(ErrorMessage = "Password is required.")]
+        public required string Password { get; set; }
+    };
 
     public record Response(Guid Id, string Email);
-
-    public class Validator : AbstractValidator<Request>
-    {
-        public Validator()
-        {
-            RuleFor(x => x.Email)
-                .NotEmpty().WithMessage("Email is required.")
-                .EmailAddress().WithMessage("Invalid email format.");
-
-            RuleFor(x => x.Password)
-                .NotEmpty().WithMessage("Password is required.");
-        }
-    }
 
     private static async Task<Results<Ok<Response>, ProblemHttpResult>> HandleAsync(
         Request request,
