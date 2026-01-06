@@ -20,7 +20,7 @@ public static class Login
         public static void Map(IEndpointRouteBuilder app)
         {
             app.MapPost("/login", HandleAsync)
-                .WithRequestValidation<Request>()
+                .ProducesValidationProblem()
                 .Produces<Response>()
                 .ProducesProblem(StatusCodes.Status401Unauthorized);
         }

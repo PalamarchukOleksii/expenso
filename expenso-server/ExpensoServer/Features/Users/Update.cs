@@ -3,7 +3,6 @@ using System.Security.Claims;
 using ExpensoServer.Common.Abstractions;
 using ExpensoServer.Common.Extensions;
 using ExpensoServer.Data;
-using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,7 +15,7 @@ public static class Update
         public static void Map(IEndpointRouteBuilder app)
         {
             app.MapPatch("/current", HandleAsync)
-                .WithRequestValidation<Request>()
+                .ProducesValidationProblem()
                 .Produces<Response>()
                 .ProducesProblem(StatusCodes.Status404NotFound)
                 .ProducesProblem(StatusCodes.Status409Conflict);

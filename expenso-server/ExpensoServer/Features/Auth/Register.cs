@@ -3,7 +3,6 @@ using System.Security.Cryptography;
 using System.Text;
 using ExpensoServer.Common.Abstractions;
 using ExpensoServer.Common.Constants;
-using ExpensoServer.Common.Filters;
 using ExpensoServer.Data;
 using ExpensoServer.Data.Entities;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -18,7 +17,7 @@ public static class Register
         public static void Map(IEndpointRouteBuilder app)
         {
             app.MapPost("/register", HandleAsync)
-                .AddEndpointFilter<RequestValidationFilter<Request>>()
+                .ProducesValidationProblem()
                 .Produces<Response>(StatusCodes.Status201Created)
                 .ProducesProblem(StatusCodes.Status400BadRequest)
                 .ProducesProblem(StatusCodes.Status409Conflict);

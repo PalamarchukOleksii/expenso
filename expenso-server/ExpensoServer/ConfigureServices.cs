@@ -1,6 +1,4 @@
-using ExpensoServer.Common.Extensions;
 using ExpensoServer.Data;
-using FluentValidation;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +12,6 @@ public static class ConfigureServices
         builder.AddDatabase();
         builder.AddAuthentication();
         builder.AddAuthorization();
-        builder.AddValidators();
         builder.AddValidation();
         builder.AddOpenApi();
         builder.AddRequestsLogging();
@@ -45,11 +42,6 @@ public static class ConfigureServices
     {
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-    }
-
-    private static void AddValidators(this WebApplicationBuilder builder)
-    {
-        builder.Services.AddValidatorsFromAssemblyContaining<Program>();
     }
 
     private static void AddAuthentication(this WebApplicationBuilder builder)

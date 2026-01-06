@@ -4,7 +4,6 @@ using ExpensoServer.Common.Abstractions;
 using ExpensoServer.Common.Extensions;
 using ExpensoServer.Data;
 using ExpensoServer.Data.Enums;
-using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,7 +16,7 @@ public static class Update
         public static void Map(IEndpointRouteBuilder app)
         {
             app.MapPatch("/{id:guid}", HandleAsync)
-                .WithRequestValidation<Request>()
+                .ProducesValidationProblem()
                 .Produces<Response>()
                 .ProducesProblem(StatusCodes.Status404NotFound);
         }

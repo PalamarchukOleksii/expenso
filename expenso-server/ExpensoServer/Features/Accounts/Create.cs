@@ -18,7 +18,7 @@ public static class Create
         public static void Map(IEndpointRouteBuilder app)
         {
             app.MapPost("/create", HandleAsync)
-                .WithRequestValidation<Request>()
+                .ProducesValidationProblem()
                 .Produces<Response>(StatusCodes.Status201Created)
                 .ProducesProblem(StatusCodes.Status400BadRequest)
                 .ProducesProblem(StatusCodes.Status409Conflict);
