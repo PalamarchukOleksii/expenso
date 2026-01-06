@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using ExpensoServer.Common.Abstractions;
 using ExpensoServer.Common.Extensions;
@@ -25,30 +26,49 @@ public static class Update
         }
     }
 
-    public record Request(string? Name, decimal? Balance, string? Currency);
-
-    public record Response(Guid Id, string Name, decimal Balance, string Currency);
-
-    public class Validator : AbstractValidator<Request>
+    public class Request
     {
-        public Validator()
+        [StringLength(100, MinimumLength = 3, ErrorMessage = "Name must be between 3 and 100 characters.")]
+        public string? Name { get; set; }
+
+        [BalanceValidation]
+        public decimal? Balance { get; set; }
+
+        [CurrencyValidation]
+        public string? Currency { get; set; }
+    }
+
+    [AttributeUsage(AttributeTargets.Property)]
+    public sealed class BalanceValidationAttribute : ValidationAttribute
+    {
+        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
-            RuleFor(x => x.Name)
-                .NotEmpty().WithMessage("Name is required.")
-                .MinimumLength(3).WithMessage("Name must be at least 3 characters long.")
-                .MaximumLength(100).WithMessage("Name must be at most 100 characters long.")
-                .When(x => x.Name is not null);
+            if (value is not decimal balance)
+                return ValidationResult.Success;
 
-            RuleFor(x => x.Balance)
-                .GreaterThanOrEqualTo(0).WithMessage("Balance must be zero or positive.")
-                .When(x => x.Balance.HasValue);
+            if (balance < 0)
+                return new ValidationResult("Balance must be zero or positive.");
 
-            RuleFor(x => x.Currency)
-                .Must(value => Enum.TryParse<Currency>(value, false, out _))
-                .WithMessage("Invalid currency.")
-                .When(x => x.Currency is not null);
+            return ValidationResult.Success;
         }
     }
+
+    [AttributeUsage(AttributeTargets.Property)]
+    public sealed class CurrencyValidationAttribute : ValidationAttribute
+    {
+        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
+        {
+            if (value is not string strValue)
+                return ValidationResult.Success;
+
+            if (!Enum.TryParse<Currency>(strValue, ignoreCase: true, out _))
+                return new ValidationResult("Invalid currency.");
+
+            return ValidationResult.Success;
+        }
+    }
+
+    public record Response(Guid Id, string Name, decimal Balance, string Currency);
 
     private static async Task<Results<Ok<Response>, ProblemHttpResult>> HandleAsync(
         Guid id,
