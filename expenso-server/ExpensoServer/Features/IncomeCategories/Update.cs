@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using ExpensoServer.Common.Abstractions;
 using ExpensoServer.Common.Extensions;
@@ -24,20 +25,15 @@ public static class Update
         }
     }
 
-    public record Request(string Name);
+    public class Request
+    {
+        [Required(ErrorMessage = "Name is required.")]
+        [MinLength(3, ErrorMessage = "Name must be at least 3 characters long.")]
+        [MaxLength(100, ErrorMessage = "Name must be at most 100 characters long.")]
+        public string Name { get; set; } = default!;
+    }
 
     public record Response(Guid Id, string Name);
-
-    public class Validator : AbstractValidator<Request>
-    {
-        public Validator()
-        {
-            RuleFor(x => x.Name)
-                .NotEmpty().WithMessage("Name is required.")
-                .MinimumLength(3).WithMessage("Name must be at least 3 characters long.")
-                .MaximumLength(100).WithMessage("Name must be at most 100 characters long.");
-        }
-    }
 
     private static async Task<Results<Ok<Response>, ProblemHttpResult>> HandleAsync(
         Guid id,
