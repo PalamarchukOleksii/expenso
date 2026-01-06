@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using ExpensoServer.Common.Abstractions;
 using ExpensoServer.Common.Extensions;
@@ -22,7 +23,50 @@ public static class Update
         }
     }
 
-    public record Request(Guid? AccountId, Guid? CategoryId, decimal? Amount, string? Note);
+    public class Request
+    {
+        [GuidRequiredIfHasValue(ErrorMessage = "AccountId is required.")]
+        public Guid? AccountId { get; set; }
+
+        [GuidRequiredIfHasValue(ErrorMessage = "CategoryId is required.")]
+        public Guid? CategoryId { get; set; }
+
+        [DecimalGreaterThanZeroIfHasValue(ErrorMessage = "Amount must be greater than zero.")]
+        public decimal? Amount { get; set; }
+
+        [MaxLength(500, ErrorMessage = "Note cannot exceed 500 characters.")]
+        public string? Note { get; set; }
+    }
+
+    [AttributeUsage(AttributeTargets.Property)]
+    public sealed class GuidRequiredIfHasValueAttribute : ValidationAttribute
+    {
+        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
+        {
+            if (value is Guid guid)
+            {
+                if (guid == Guid.Empty)
+                    return new ValidationResult(ErrorMessage);
+            }
+
+            return ValidationResult.Success;
+        }
+    }
+
+    [AttributeUsage(AttributeTargets.Property)]
+    public sealed class DecimalGreaterThanZeroIfHasValueAttribute : ValidationAttribute
+    {
+        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
+        {
+            if (value is decimal decimalValue)
+            {
+                if (decimalValue <= 0)
+                    return new ValidationResult(ErrorMessage);
+            }
+
+            return ValidationResult.Success;
+        }
+    }
 
     public record Response(
         Guid Id,
@@ -32,28 +76,6 @@ public static class Update
         string Currency,
         DateTime Timestamp,
         string? Note);
-
-    public class Validator : AbstractValidator<Request>
-    {
-        public Validator()
-        {
-            RuleFor(x => x.AccountId)
-                .NotEmpty().WithMessage("AccountId is required.")
-                .When(x => x.AccountId.HasValue);
-
-            RuleFor(x => x.CategoryId)
-                .NotEmpty().WithMessage("CategoryId is required.")
-                .When(x => x.CategoryId.HasValue);
-
-            RuleFor(x => x.Amount)
-                .GreaterThan(0).WithMessage("Amount must be greater than zero.")
-                .When(x => x.Amount.HasValue);
-
-            RuleFor(x => x.Note)
-                .MaximumLength(500).WithMessage("Note cannot exceed 500 characters.")
-                .When(x => x.Note is not null);
-        }
-    }
 
     private static async Task<Results<Ok<Response>, ProblemHttpResult>> HandleAsync(
         Guid id,

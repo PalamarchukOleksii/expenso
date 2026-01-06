@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using ExpensoServer.Common.Abstractions;
 using ExpensoServer.Common.Constants;
@@ -24,7 +25,20 @@ public static class Create
         }
     }
 
-    public record Request(Guid AccountId, Guid CategoryId, decimal Amount, string? Note);
+    public class Request
+    {
+        [Required(ErrorMessage = "AccountId is required.")]
+        public Guid AccountId { get; set; }
+
+        [Required(ErrorMessage = "CategoryId is required.")]
+        public Guid CategoryId { get; set; }
+
+        [Range(0.0000001, double.MaxValue, ErrorMessage = "Amount must be greater than zero.")]
+        public decimal Amount { get; set; }
+
+        [MaxLength(500, ErrorMessage = "Note cannot exceed 500 characters.")]
+        public string? Note { get; set; }
+    }
 
     public record Response(
         Guid Id,
@@ -34,24 +48,6 @@ public static class Create
         string Currency,
         DateTime Timestamp,
         string? Note);
-
-    public class Validator : AbstractValidator<Request>
-    {
-        public Validator()
-        {
-            RuleFor(x => x.AccountId)
-                .NotEmpty().WithMessage("AccountId is required.");
-
-            RuleFor(x => x.CategoryId)
-                .NotEmpty().WithMessage("CategoryId is required.");
-
-            RuleFor(x => x.Amount)
-                .GreaterThan(0).WithMessage("Amount must be greater than zero.");
-
-            RuleFor(x => x.Note)
-                .MaximumLength(500).WithMessage("Note cannot exceed 500 characters.");
-        }
-    }
 
     private static async Task<Results<Created<Response>, ProblemHttpResult>> HandleAsync(
         Request request,

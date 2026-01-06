@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using ExpensoServer.Common.Abstractions;
 using ExpensoServer.Common.Constants;
@@ -25,7 +26,64 @@ public static class Create
         }
     }
 
-    public record Request(Guid FromAccountId, Guid ToAccountId, decimal Amount, string? Note, decimal? ExchangeRate);
+    [CannotTransferToSameAccount]
+    public class Request
+    {
+        [GuidRequired(ErrorMessage = "FromAccountId is required.")]
+        public Guid FromAccountId { get; set; }
+
+        [GuidRequired(ErrorMessage = "ToAccountId is required.")]
+        public Guid ToAccountId { get; set; }
+
+        [Range(0.0000001, double.MaxValue, ErrorMessage = "Amount must be greater than zero.")]
+        public decimal Amount { get; set; }
+
+        [MaxLength(500, ErrorMessage = "Note cannot exceed 500 characters.")]
+        public string? Note { get; set; }
+
+        [DecimalGreaterThanZeroIfHasValue(ErrorMessage = "ExchangeRate must be greater than zero if provided.")]
+        public decimal? ExchangeRate { get; set; }
+    }
+
+
+    [AttributeUsage(AttributeTargets.Property)]
+    public sealed class GuidRequiredAttribute : ValidationAttribute
+    {
+        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
+        {
+            if (value is Guid guid && guid == Guid.Empty)
+                return new ValidationResult(ErrorMessage);
+
+            return ValidationResult.Success;
+        }
+    }
+
+    [AttributeUsage(AttributeTargets.Property)]
+    public sealed class DecimalGreaterThanZeroIfHasValueAttribute : ValidationAttribute
+    {
+        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
+        {
+            if (value is decimal decimalValue && decimalValue <= 0)
+                return new ValidationResult(ErrorMessage);
+
+            return ValidationResult.Success;
+        }
+    }
+
+    [AttributeUsage(AttributeTargets.Class)]
+    public sealed class CannotTransferToSameAccountAttribute : ValidationAttribute
+    {
+        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
+        {
+            if (value is Request request)
+            {
+                if (request.FromAccountId == request.ToAccountId)
+                    return new ValidationResult("Cannot transfer to the same account.", new[] { "FromAccountId", "ToAccountId" });
+            }
+
+            return ValidationResult.Success;
+        }
+    }
 
     public record Response(
         Guid Id,
@@ -39,32 +97,6 @@ public static class Create
         string? ConvertedCurrency = null,
         decimal? ExchangeRate = null
     );
-
-    public class Validator : AbstractValidator<Request>
-    {
-        public Validator()
-        {
-            RuleFor(x => x.FromAccountId)
-                .NotEmpty().WithMessage("FromAccountId is required.");
-
-            RuleFor(x => x.ToAccountId)
-                .NotEmpty().WithMessage("ToAccountId is required.");
-
-            RuleFor(x => x)
-                .Must(x => x.FromAccountId != x.ToAccountId)
-                .WithMessage("Cannot transfer to the same account.");
-
-            RuleFor(x => x.Amount)
-                .GreaterThan(0).WithMessage("Amount must be greater than zero.");
-
-            RuleFor(x => x.Note)
-                .MaximumLength(500).WithMessage("Note cannot exceed 500 characters.");
-
-            RuleFor(x => x.ExchangeRate)
-                .GreaterThan(0).When(x => x.ExchangeRate.HasValue)
-                .WithMessage("ExchangeRate must be greater than zero if provided.");
-        }
-    }
 
     private static async Task<Results<Created<Response>, ProblemHttpResult>> HandleAsync(
         Request request,

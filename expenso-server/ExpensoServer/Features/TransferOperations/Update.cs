@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using ExpensoServer.Common.Abstractions;
 using ExpensoServer.Common.Extensions;
@@ -23,13 +24,70 @@ public static class Update
         }
     }
 
-    public record Request(
-        Guid? FromAccountId,
-        Guid? ToAccountId,
-        decimal? Amount,
-        string? Note,
-        decimal? ExchangeRate
-    );
+    [CannotTransferToSameAccountIfBothProvided(ErrorMessage = "Cannot transfer to the same account.")]
+    public class Request
+    {
+        [GuidIfHasValue(ErrorMessage = "FromAccountId is required.")]
+        public Guid? FromAccountId { get; set; }
+
+        [GuidIfHasValue(ErrorMessage = "ToAccountId is required.")]
+        public Guid? ToAccountId { get; set; }
+
+        [DecimalGreaterThanZeroIfHasValue(ErrorMessage = "Amount must be greater than zero.")]
+        public decimal? Amount { get; set; }
+
+        [MaxLength(500, ErrorMessage = "Note cannot exceed 500 characters.")]
+        public string? Note { get; set; }
+
+        [DecimalGreaterThanZeroIfHasValue(ErrorMessage = "ExchangeRate must be greater than zero if provided.")]
+        public decimal? ExchangeRate { get; set; }
+    }
+
+    [AttributeUsage(AttributeTargets.Property)]
+    public sealed class GuidIfHasValueAttribute : ValidationAttribute
+    {
+        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
+        {
+            if (value is Guid guid && guid == Guid.Empty)
+                return new ValidationResult(ErrorMessage);
+
+            return ValidationResult.Success;
+        }
+    }
+
+    [AttributeUsage(AttributeTargets.Property)]
+    public sealed class DecimalGreaterThanZeroIfHasValueAttribute : ValidationAttribute
+    {
+        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
+        {
+            if (value is decimal decimalValue && decimalValue <= 0)
+                return new ValidationResult(ErrorMessage);
+
+            return ValidationResult.Success;
+        }
+    }
+
+    [AttributeUsage(AttributeTargets.Class)]
+    public sealed class CannotTransferToSameAccountIfBothProvidedAttribute : ValidationAttribute
+    {
+        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
+        {
+            if (value is Request request)
+            {
+                if (request.FromAccountId.HasValue
+                    && request.ToAccountId.HasValue
+                    && request.FromAccountId.Value == request.ToAccountId.Value)
+                {
+                    return new ValidationResult(
+                        ErrorMessage,
+                        new[] { nameof(Request.FromAccountId), nameof(Request.ToAccountId) }
+                    );
+                }
+            }
+
+            return ValidationResult.Success;
+        }
+    }
 
     public record Response(
         Guid Id,
@@ -43,32 +101,6 @@ public static class Update
         string? ConvertedCurrency = null,
         decimal? ExchangeRate = null
     );
-
-    public class Validator : AbstractValidator<Request>
-    {
-        public Validator()
-        {
-            RuleFor(x => x.FromAccountId)
-                .NotEmpty().When(x => x.FromAccountId.HasValue);
-
-            RuleFor(x => x.ToAccountId)
-                .NotEmpty().When(x => x.ToAccountId.HasValue);
-
-            RuleFor(x => x)
-                .Must(x => x.FromAccountId != x.ToAccountId)
-                .When(x => x.FromAccountId.HasValue && x.ToAccountId.HasValue)
-                .WithMessage("Cannot transfer to the same account.");
-
-            RuleFor(x => x.Amount)
-                .GreaterThan(0).When(x => x.Amount.HasValue);
-
-            RuleFor(x => x.Note)
-                .MaximumLength(500).When(x => x.Note is not null);
-
-            RuleFor(x => x.ExchangeRate)
-                .GreaterThan(0).When(x => x.ExchangeRate.HasValue);
-        }
-    }
 
     private static async Task<Results<Ok<Response>, ProblemHttpResult>> HandleAsync(
         Guid id,
