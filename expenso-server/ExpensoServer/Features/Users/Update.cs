@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using ExpensoServer.Common.Abstractions;
 using ExpensoServer.Common.Extensions;
@@ -22,19 +23,14 @@ public static class Update
         }
     }
 
-    public record Request(string Email);
+    public class Request
+    {
+        [Required(ErrorMessage = "Email is required.")]
+        [EmailAddress(ErrorMessage = "Invalid email format.")]
+        public string Email { get; set; } = default!;
+    }
 
     public record Response(Guid Id, string Email);
-
-    public class Validator : AbstractValidator<Request>
-    {
-        public Validator()
-        {
-            RuleFor(x => x.Email)
-                .NotEmpty().WithMessage("Email is required.")
-                .EmailAddress().WithMessage("Invalid email format.");
-        }
-    }
 
     private static async Task<Results<Ok<Response>, ProblemHttpResult>> HandleAsync(
         Request request,
