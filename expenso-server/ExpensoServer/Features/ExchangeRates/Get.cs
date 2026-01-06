@@ -71,10 +71,16 @@ public static class Get
                 detail: "Received invalid data from exchange rates API.",
                 statusCode: StatusCodes.Status500InternalServerError);
 
-        if (!apiResponse.Rates.TryGetValue(to, out var rateElement))
+        if (!apiResponse.Rates.TryGetValue(from, out var fromRates))
             return TypedResults.Problem(
                 title: "Currency not supported",
-                detail: $"The currency '{toCurrency}' is not supported.",
+                detail: $"The currency '{fromCurrency}' is not supported.",
+                statusCode: StatusCodes.Status400BadRequest);
+
+        if (!fromRates.TryGetProperty(to, out var rateElement))
+            return TypedResults.Problem(
+                title: "Currency not supported",
+                detail: $"The currency '{toCurrency}' is not supported for '{fromCurrency}'.",
                 statusCode: StatusCodes.Status400BadRequest);
 
         if (!rateElement.TryGetDecimal(out var rate))
